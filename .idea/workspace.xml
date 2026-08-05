@@ -5,20 +5,25 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e819031e-7faf-4373-8a63-fae9e0ef639c" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/app/actions.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/components/SideCard.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/components/SideCardLoginButtons.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/components/SideCardProfile.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/lib/prisma.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/components/Button.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/components/NavBar.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/components/svg/GitHubLogo.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/components/svg/GoogleLogo.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/components/svg/Logo.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/constants/tailwindData.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/actions.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/actions.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/components/SideCard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/components/SideCard.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/components/SideCardLoginButtons.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/components/SideCardLoginButtons.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/globals.css" beforeDir="false" afterPath="$PROJECT_DIR$/app/globals.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/layout.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pnpm-lock.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pnpm-lock.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pnpm-workspace.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pnpm-workspace.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tsconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/tsconfig.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth.ts" beforeDir="false" afterPath="$PROJECT_DIR$/auth.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/types/Comment.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/types/Comment.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/types/Like.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/types/Like.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/types/Post.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/types/Post.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/types/User.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/types/User.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/types/next-auth.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/types/next-auth.d.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -31,60 +36,60 @@
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
       <entry key="MS100" value="1.0" />
-      <entry key="MS500" value="1.0000239651679173" />
-      <entry key="S2" value="1.1294745841680598" />
-      <entry key="S5" value="2.2608455186429075" />
-      <entry key="S10" value="4.415821033749163" />
-      <entry key="S30" value="12.297698786123053" />
-      <entry key="S60" value="22.262786716519813" />
-      <entry key="M2" value="34.29840775225654" />
-      <entry key="M5" value="54.104283054226954" />
-      <entry key="M10" value="82.54555285471875" />
-      <entry key="M15" value="109.91004297646977" />
-      <entry key="M30" value="172.76441289775002" />
-      <entry key="H1" value="239.31982495124632" />
-      <entry key="H2" value="291.5625106772125" />
-      <entry key="H4" value="325.0527000588848" />
-      <entry key="D1" value="357.83266925353496" />
-      <entry key="W1" value="363.9627267739223" />
+      <entry key="MS500" value="1.0" />
+      <entry key="S2" value="1.0" />
+      <entry key="S5" value="1.0000000002481582" />
+      <entry key="S10" value="1.0000296755266491" />
+      <entry key="S30" value="1.1077566657038709" />
+      <entry key="S60" value="2.069967043464799" />
+      <entry key="M2" value="5.315124167820335" />
+      <entry key="M5" value="17.856753425505488" />
+      <entry key="M10" value="41.85233083899098" />
+      <entry key="M15" value="67.25721165909279" />
+      <entry key="M30" value="146.04982971418661" />
+      <entry key="H1" value="289.38600254034964" />
+      <entry key="H2" value="468.13909906039885" />
+      <entry key="H4" value="621.429722535351" />
+      <entry key="D1" value="805.0806059131442" />
+      <entry key="W1" value="843.3895398866363" />
     </decayedCancelled>
     <decayedSelected>
       <entry key="MS100" value="0.0" />
-      <entry key="MS500" value="4.464168247837403E-78" />
-      <entry key="S2" value="4.596588758135436E-20" />
-      <entry key="S5" value="1.848488764308452E-8" />
-      <entry key="S10" value="1.4451787936795002E-4" />
-      <entry key="S30" value="0.07206632865209214" />
-      <entry key="S60" value="0.370524948000991" />
-      <entry key="M2" value="0.8668469192364052" />
-      <entry key="M5" value="1.9082638280103474" />
-      <entry key="M10" value="3.7344313013061448" />
-      <entry key="M15" value="5.3039689405486845" />
-      <entry key="M30" value="8.21689864112725" />
-      <entry key="H1" value="10.59652730168971" />
-      <entry key="H2" value="12.14323980172171" />
-      <entry key="H4" value="13.028807660914437" />
-      <entry key="D1" value="13.831806876477543" />
-      <entry key="W1" value="13.975812195925661" />
+      <entry key="MS500" value="2.387895739055936E-93" />
+      <entry key="S2" value="8.629711364093229E-24" />
+      <entry key="S5" value="8.531477789976527E-10" />
+      <entry key="S10" value="4.126960874360995E-5" />
+      <entry key="S30" value="0.07430519911786986" />
+      <entry key="S60" value="0.7404742357001084" />
+      <entry key="M2" value="3.060841562283163" />
+      <entry key="M5" value="9.745289900031292" />
+      <entry key="M10" value="18.364099862678852" />
+      <entry key="M15" value="24.939098966693862" />
+      <entry key="M30" value="39.028666173960474" />
+      <entry key="H1" value="56.36702449503572" />
+      <entry key="H2" value="73.07741887826829" />
+      <entry key="H4" value="85.45017641767716" />
+      <entry key="D1" value="98.8845694254626" />
+      <entry key="W1" value="101.54514287659667" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="0.7791645796604998" />
-      <entry key="MS500" value="0.9513276010760151" />
-      <entry key="S2" value="1.0990064020152222" />
-      <entry key="S5" value="2.1968961510331333" />
-      <entry key="S10" value="4.333929692804803" />
-      <entry key="S30" value="12.287007323485179" />
-      <entry key="S60" value="22.562743348343055" />
-      <entry key="M2" value="35.11386392562113" />
-      <entry key="M5" value="55.973204487569156" />
-      <entry key="M10" value="86.23521825455224" />
-      <entry key="M15" value="115.16739882987183" />
-      <entry key="M30" value="180.94041239251354" />
-      <entry key="H1" value="249.887619433462" />
-      <entry key="H2" value="303.68837002285096" />
-      <entry key="H4" value="338.07188951537296" />
-      <entry key="D1" value="371.6627254506707" />
-      <entry key="W1" value="377.9382849792789" />
+      <entry key="MS100" value="0.023519480428297917" />
+      <entry key="MS500" value="0.47237352049860304" />
+      <entry key="S2" value="0.8290321753623405" />
+      <entry key="S5" value="0.9277448557820613" />
+      <entry key="S10" value="0.9632622286233721" />
+      <entry key="S30" value="1.1661911088311598" />
+      <entry key="S60" value="2.7858465610636918" />
+      <entry key="M2" value="8.333276056250492" />
+      <entry key="M5" value="27.534543820640504" />
+      <entry key="M10" value="60.133950886326694" />
+      <entry key="M15" value="92.11050484187031" />
+      <entry key="M30" value="184.9970204637772" />
+      <entry key="H1" value="345.68515722163903" />
+      <entry key="H2" value="541.1681176643921" />
+      <entry key="H4" value="706.8499680802314" />
+      <entry key="D1" value="903.9590966311308" />
+      <entry key="W1" value="944.9337826630388" />
     </decayedShown>
   </component>
   <component name="ProjectColorInfo">{
@@ -116,8 +121,10 @@
     &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
     &quot;last_opened_file_path&quot;: &quot;/home/sprint/brain/projects/dev-sync&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.jshint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.jshint&quot;: &quot;&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
     &quot;npm.Next.js: server-side.executor&quot;: &quot;Run&quot;,
@@ -126,6 +133,12 @@
     &quot;ts.external.directory.path&quot;: &quot;/home/sprint/brain/projects/dev-sync/node_modules/typescript/lib&quot;
   }
 }</component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/app/components/svg" />
+      <recent name="$PROJECT_DIR$/app" />
+    </key>
+  </component>
   <component name="RunManager" selected="npm.Next.js: server-side">
     <configuration name="Next.js: debug client-side" type="JavascriptDebugType" uri="http://localhost:3000/">
       <method v="2" />
@@ -159,7 +172,10 @@
       <workItem from="1785806215857" duration="2510000" />
       <workItem from="1785883644115" duration="1764000" />
       <workItem from="1785887565139" duration="1173000" />
-      <workItem from="1785888764617" duration="293000" />
+      <workItem from="1785888764617" duration="445000" />
+      <workItem from="1785892228532" duration="595000" />
+      <workItem from="1785964188982" duration="5154000" />
+      <workItem from="1785969448402" duration="2434000" />
     </task>
     <servers />
   </component>
