@@ -5,10 +5,7 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/app/lib/prisma";
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
-    adapter: PrismaAdapter(prisma),
+  adapter: PrismaAdapter(prisma),
 
-    providers: [
-        GitHub,
-        Google
-    ],
+  providers: [GitHub, Google],
 });

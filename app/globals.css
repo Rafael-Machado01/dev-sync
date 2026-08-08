@@ -1,19 +1,40 @@
 @import "tailwindcss";
 
 @theme {
-  --color-drac-bg:      #282a36;
-  --color-drac-darker:  #1e1f29;
-  --color-drac-card:    #21222c;
+  --color-drac-bg: #282a36;
+  --color-drac-darker: #1e1f29;
+  --color-drac-card: #21222c;
   --color-drac-surface: #2d2f3e;
-  --color-drac-line:    #44475a;
+  --color-drac-line: #44475a;
   --color-drac-comment: #6272a4;
-  --color-drac-fg:      #f8f8f2;
-  --color-drac-purple:  #bd93f9;
-  --color-drac-pink:    #ff79c6;
-  --color-drac-cyan:    #8be9fd;
-  --color-drac-green:   #50fa7b;
-  --color-drac-yellow:  #f1fa8c;
-  --color-drac-orange:  #ffb86c;
-  --color-drac-red:     #ff5555;
+  --color-drac-fg: #f8f8f2;
+  --color-drac-purple: #bd93f9;
+  --color-drac-pink: #ff79c6;
+  --color-drac-cyan: #8be9fd;
+  --color-drac-green: #50fa7b;
+  --color-drac-yellow: #f1fa8c;
+  --color-drac-orange: #ffb86c;
+  --color-drac-red: #ff5555;
 }
 
+@keyframes float {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+
+  25% {
+    transform: translate3d(1px, -2px, 0) rotate(0.2deg);
+  }
+
+  50% {
+    transform: translate3d(0, -4px, 0) rotate(0deg);
+  }
+
+  75% {
+    transform: translate3d(-1px, -2px, 0) rotate(-0.2deg);
+  }
+
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+}
