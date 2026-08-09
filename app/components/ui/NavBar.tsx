@@ -1,7 +1,7 @@
 import Logo from "@/app/components/svg/Logo";
 import Button from "@/app/components/Button";
 import { logout } from "@/app/actions";
-import LogoutIcon from "./svg/LogoutIcon";
+import LogoutIcon from "../svg/LogoutIcon";
 import getCurrentUser from "@/app/lib/auth-user";
 export default async function NavBar() {
   const isLoggedIn = await getCurrentUser();

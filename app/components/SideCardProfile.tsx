@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { auth } from "auth";
 import { getUserByEmail } from "@/app/actions";
-import Avatar from "@/app/components/Avatar";
+import Avatar from "@/app/components/ui/Avatar";
 import Button from "@/app/components/Button";
 
 export default async function SideCardProfile() {

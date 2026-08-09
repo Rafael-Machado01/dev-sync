@@ -1,6 +1,6 @@
-import NavBar from "@/app/components/NavBar";
+import NavBar from "@/app/components/ui/NavBar";
 import { tailwindData } from "@/app/constants/tailwindData";
-import SideCard from "@/app/components/SideCard";
+import SideCard from "@/app/components/ui/SideCard";
 
 export default function Home() {
   return (
