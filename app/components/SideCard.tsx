@@ -1,13 +1,12 @@
-import { getUserByEmail } from "@/app/actions";
-import { auth } from "auth";
-import SideCardLoginButtons from "@/app/components/SideCardLoginButtons";
+import getCurrentUser from "@/app/lib/auth-user";
+import SideCardProfile from "./SideCardProfile";
+import SideCardLoginButtons from "./SideCardLoginButtons";
+import Card from "@/app/components/Card";
 
 export default async function SideCard() {
-  const session = await auth();
-  const user = await getUserByEmail(session?.user.email);
+  const isLoggedIn = await getCurrentUser();
+  console.log(isLoggedIn);
   return (
-    <main className={"bg-drac-card "}>
-      {user ? <h1>A</h1> : <SideCardLoginButtons />}
-    </main>
+    <Card>{isLoggedIn ? <SideCardProfile /> : <SideCardLoginButtons />}</Card>
   );
 }

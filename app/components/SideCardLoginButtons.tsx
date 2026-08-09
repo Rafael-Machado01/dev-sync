@@ -6,7 +6,7 @@ import { loginProviders } from "@/app/constants/login-providers";
 
 export default function SideCardLoginButtons() {
   return (
-    <main className={"flex flex-col gap-2 justify-center items-center"}>
+    <main className={"flex flex-col gap-2 p-2 justify-center items-center"}>
       <Logo />
       {loginProviders.map((provider) => {
         const Icon = provider.icon;

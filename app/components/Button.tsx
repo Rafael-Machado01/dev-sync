@@ -1,4 +1,4 @@
-import type { ButtonHTMLAttributes, ComponentType, SVGProps } from "react";
+import type { ButtonHTMLAttributes } from "react";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
