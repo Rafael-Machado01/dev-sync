@@ -1,6 +1,6 @@
 export default function SyncLogo({ size = 34 }: { size?: number }) {
   return (
-    <div className="flex items-center gap-2.5">
+    <div className={` flex items-center justify-center gap-2.5`}>
       <svg
         width={size}
         height={size}

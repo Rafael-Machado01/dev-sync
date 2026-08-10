@@ -38,3 +38,24 @@
     transform: translate3d(0, 0, 0) rotate(0deg);
   }
 }
+@layer utilities {
+  /* Glow usado no border/hover do modal e botões (glow(D.purple, 18)) */
+  .shadow-glow-purple {
+    box-shadow:
+      0 0 18px color-mix(in srgb, var(--color-drac-purple) 13%, transparent),
+      0 0 54px color-mix(in srgb, var(--color-drac-purple) 4%, transparent);
+  }
+  .shadow-glow-purple-lg {
+    box-shadow:
+      0 0 60px color-mix(in srgb, var(--color-drac-purple) 13%, transparent),
+      0 0 0 1px color-mix(in srgb, var(--color-drac-line) 33%, transparent);
+  }
+  .shadow-glow-cyan {
+    box-shadow: 0 0 8px
+      color-mix(in srgb, var(--color-drac-cyan) 33%, transparent);
+  }
+  .shadow-glow-red {
+    box-shadow: 0 0 10px
+      color-mix(in srgb, var(--color-drac-red) 13%, transparent);
+  }
+}
