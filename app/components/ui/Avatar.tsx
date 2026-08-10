@@ -11,7 +11,7 @@ export default function Avatar({ src, alt, size, ring }: AvatarProps) {
   return (
     <div className="relative shrink-0" style={{ width: size, height: size }}>
       {ring && (
-        <div className="absolute -inset-0.75 rounded-full border-[1.5px] border-drac-purple shadow-[0_0_10px_#a855f7]" />
+        <div className="absolute -inset-0.75 rounded-full border-[1.5px] border-drac-purple shadow-glow-purple" />
       )}
       <Image
         width={size}

@@ -1,6 +1,6 @@
 import getCurrentUser from "@/app/lib/auth-user";
-import SideCardProfile from "../SideCardProfile";
-import SideCardLoginButtons from "../SideCardLoginButtons";
+import SideCardProfile from "./SideCardProfile";
+import SideCardLoginButtons from "./SideCardLoginButtons";
 import Card from "@/app/components/ui/Card";
 
 export default async function SideCard() {

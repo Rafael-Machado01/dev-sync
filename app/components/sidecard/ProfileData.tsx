@@ -1,19 +1,24 @@
-import Image from "next/image";
 import { auth } from "auth";
 import { getUserByEmail } from "@/app/actions";
+import Image from "next/image";
 import Avatar from "@/app/components/ui/Avatar";
-import Button from "@/app/components/Button";
+import React from "react";
+import LocationIcon from "@/app/components/svg/LocationIcon";
 
-export default async function SideCardProfile() {
+interface ProfileDataProps {
+  children: React.ReactNode;
+}
+
+export default async function ProfileData({ children }: ProfileDataProps) {
   const session = await auth();
   const user = await getUserByEmail(session?.user?.email);
 
   return (
-    <div className="overflow-hidden rounded-xl">
+    <>
       <div className="relative h-19">
         <Image
           className="object-cover opacity-35"
-          src="/bgsetup.jpg"
+          src={user?.background}
           alt={`Foto de capa de ${user?.name}`}
           fill
         />
@@ -46,12 +51,14 @@ export default async function SideCardProfile() {
           <p className="text-sm font-bold text-drac-fg">{user?.name}</p>
 
           <p className="mt-0.5 text-xs text-drac-comment">Devloper</p>
+          <p className="mt-0.5 text-xs text-drac-comment">
+            <LocationIcon className="inline-block size-2.5 text-drac-cyan mr-1" />
+            São paulo BR
+          </p>
+          <div className="flex gap-2 mt-2"></div>
         </div>
-
-        <Button className="mt-3.5 w-full text-sm rounded-lg border border-drac-purple bg-transparent text-drac-purple hover:bg-drac-darker hover:text-drac-cyan">
-          [ EDITAR PERFIL ]
-        </Button>
+        {children}
       </div>
-    </div>
+    </>
   );
 }

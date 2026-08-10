@@ -1,12 +1,16 @@
 import { signInWithProvider } from "@/app/actions";
-import Button from "@/app/components/Button";
+import Button from "@/app/components/ui/Button";
 import Logo from "@/app/components/svg/Logo";
 import { tailwindData } from "@/app/constants/tailwindData";
 import { loginProviders } from "@/app/constants/login-providers";
 
 export default function SideCardLoginButtons() {
   return (
-    <main className={"flex flex-col gap-2 p-2 justify-center items-center"}>
+    <main
+      className={
+        "flex flex-col gap-2 border-none p-2 justify-center  items-center"
+      }
+    >
       <Logo />
       {loginProviders.map((provider) => {
         const Icon = provider.icon;
@@ -17,7 +21,7 @@ export default function SideCardLoginButtons() {
           >
             <Button
               type="submit"
-              className={tailwindData.signInButton}
+              className={`${tailwindData.signInButton} shadow-2xl `}
               icon={<Icon className="size-5" />}
             >
               Entre com {provider.name}

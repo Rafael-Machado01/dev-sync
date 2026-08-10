@@ -5,5 +5,6 @@ export const tailwindData = {
   gridLayoutMain: "flex flex-col gap-3.5",
   gridLayoutRightSide: "sticky top-[90px] flex flex-col gap-4 hidden md:flex",
   signInButton:
-    "bg-transparent border border-b-drac-purple text-drac-purple hover:shadow-[0_0_10px_var(--color-drac-purple)]",
+    "bg-transparent border border-drac-purple/25 text-drac-purple hover:shadow-glow-purple",
+  centered: "flex justify-center items-center",
 };
