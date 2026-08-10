@@ -1,6 +1,3 @@
-"use client";
-import React, { useState } from "react";
-
 interface ModalProps {
   className?: string;
   isOpen: boolean;
