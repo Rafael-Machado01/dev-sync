@@ -18,7 +18,7 @@ export default async function ProfileData({ children }: ProfileDataProps) {
       <div className="relative h-19">
         <Image
           className="object-cover opacity-35"
-          src={user?.background}
+          src={user?.background ?? "/bgsetup.jpg"}
           alt={`Foto de capa de ${user?.name}`}
           fill
         />
@@ -50,10 +50,12 @@ export default async function ProfileData({ children }: ProfileDataProps) {
         <div className="mt-2.5">
           <p className="text-sm font-bold text-drac-fg">{user?.name}</p>
 
-          <p className="mt-0.5 text-xs text-drac-comment">Devloper</p>
+          <p className="mt-0.5 text-xs text-drac-comment">
+            {user?.title ?? "Newbie"}
+          </p>
           <p className="mt-0.5 text-xs text-drac-comment">
             <LocationIcon className="inline-block size-2.5 text-drac-cyan mr-1" />
-            São paulo BR
+            {user?.location ?? "Earth"}
           </p>
           <div className="flex gap-2 mt-2"></div>
         </div>

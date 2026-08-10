@@ -7,6 +7,7 @@ export interface User {
   email: string | null;
   title: string | null;
   stacks: string[];
+  location: string | null;
   background: string | null;
   emailVerified: Date | null;
   image: string | null;

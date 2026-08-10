@@ -4,9 +4,9 @@ import { useState } from "react";
 import Modal from "@/app/components/ui/Modal";
 
 export default function EditProfile() {
-  const [state, setState] = useState(false);
+  const [toggle, setToggle] = useState(false);
   const handleClickEdit = () => {
-    setState(!state);
+    setToggle(!toggle);
   };
   return (
     <>
@@ -16,7 +16,9 @@ export default function EditProfile() {
       >
         [ EDITAR PERFIL ]
       </Button>
-      {state ? <Modal title="Edit Profile">a</Modal> : ""}
+      <Modal isOpen={toggle} onClose={handleClickEdit} title="Edit Profile">
+        a
+      </Modal>
     </>
   );
 }

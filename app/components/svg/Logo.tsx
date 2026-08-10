@@ -1,5 +1,3 @@
-import { tailwindData } from "@/app/constants/tailwindData";
-
 export default function SyncLogo({ size = 34 }: { size?: number }) {
   return (
     <div className={` flex items-center justify-center gap-2.5`}>

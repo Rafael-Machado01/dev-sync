@@ -3,23 +3,24 @@ import React, { useState } from "react";
 
 interface ModalProps {
   className?: string;
-  isOpen?: boolean;
+  isOpen: boolean;
   children: React.ReactNode;
   title: string;
+  onClose: () => void;
 }
 
-export default function Modal({ className, children, title }: ModalProps) {
-  const [state, setState] = useState(true);
-
-  const handleClickClose = () => {
-    setState(false);
-  };
-
-  if (!state) return null;
+export default function Modal({
+  className,
+  children,
+  title,
+  isOpen,
+  onClose,
+}: ModalProps) {
+  if (!isOpen) return null;
 
   return (
     <div
-      onClick={handleClickClose}
+      onClick={onClose}
       className="fixed inset-0 z-100 flex items-center justify-center bg-black/78 backdrop-blur-md p-5"
     >
       <div
@@ -30,7 +31,7 @@ export default function Modal({ className, children, title }: ModalProps) {
         <div className="shrink-0 flex items-center justify-between px-6 py-4.5 border-b border-drac-line/33">
           <span className="text-xs text-drac-fg">{title}</span>
           <button
-            onClick={handleClickClose}
+            onClick={onClose}
             className="px-1 text-lg leading-none text-drac-comment hover:text-drac-fg transition-colors"
           >
             ✕
