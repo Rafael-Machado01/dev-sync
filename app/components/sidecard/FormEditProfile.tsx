@@ -44,7 +44,8 @@ export default function FormEditProfile({ user }: { user: User }) {
     <>
       <div>{formState.message && <p>{formState.message}</p>}</div>
 
-      <form action={formAction}>
+      <form action={formAction} encType="multipart/form-data">
+        <input type="hidden" name="id" id="id" value={user.id} />
         <div className="relative h-19">
           <label
             className="absolute inset-0 cursor-pointer"
@@ -53,6 +54,7 @@ export default function FormEditProfile({ user }: { user: User }) {
             <input
               type="file"
               id="background"
+              name="background"
               className="hidden"
               onChange={handleBackgroundChange}
             />
@@ -79,25 +81,34 @@ export default function FormEditProfile({ user }: { user: User }) {
                   "linear-gradient(to bottom, transparent 40%, #18181b)",
               }}
             />
+
+            <span className="absolute inset-0 flex items-center justify-center gap-1.5 text-sm text-white opacity-0 transition-opacity hover:opacity-100 bg-black/40">
+              📷 Alterar capa
+            </span>
           </label>
         </div>
-        <div className="relative mb-9">
-          <label className="absolute inset-0 cursor-pointer" htmlFor="avatar">
-            <input
-              type="file"
-              id="avatar"
-              className="hidden"
-              onChange={handleAvatarChange}
-            />
+        <div className="-mt-8 px-5 pb-5">
+          <div className="relative h-14 w-14">
+            <label className="absolute inset-0 cursor-pointer" htmlFor="avatar">
+              <input
+                type="file"
+                id="image"
+                name="image"
+                className="hidden"
+                onChange={handleAvatarChange}
+              />
 
-            <div className="-mt-8 px-5 pb-5 pt-0">
               <Avatar
                 src={newAvatar ?? user?.image ?? "/avatar.png"}
                 alt={`Foto de perfil de ${user?.name}`}
                 size={56}
               />
-            </div>
-          </label>
+
+              <span className="absolute inset-0 flex items-center justify-center rounded-full text-xs text-white opacity-0 transition-opacity hover:opacity-100 bg-black/40">
+                📷
+              </span>
+            </label>
+          </div>
         </div>
 
         <div className="px-2 m-2">
