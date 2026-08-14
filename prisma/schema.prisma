@@ -11,6 +11,7 @@ model User {
   name          String?
   email         String?         @unique
   title         String?
+  bio           String?
   stacks        String[]
   background    String?
   location      String?

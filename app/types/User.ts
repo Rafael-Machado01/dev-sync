@@ -6,6 +6,7 @@ export interface User {
   name: string | null;
   email: string | null;
   title: string | null;
+  bio: string | null;
   stacks: string[];
   location: string | null;
   background: string | null;
