@@ -52,7 +52,22 @@ export async function updateUserProfile(
 
   if (session.user.id !== id)
     return { message: "Não autorizado.", type: "error" };
-
+  if (name.length < 4) {
+    return {
+      message: "O nome deve conter no mínimo 4 Caracteres ",
+      type: "error",
+    };
+  } else if (bio.length <= 5) {
+    return {
+      message: "A bio deve conter no mínimo 5 Caracteres ",
+      type: "error",
+    };
+  } else if (location.length <= 4) {
+    return {
+      message: "A Localização deve conter no mínimo 4 Caracteres ",
+      type: "error",
+    };
+  }
   let backgroundUrl;
   let imageUrl;
 

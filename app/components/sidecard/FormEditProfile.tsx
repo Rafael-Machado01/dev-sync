@@ -10,6 +10,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { User } from "@/app/types/User";
 import type { FormState } from "@/app/actions";
+import Popup from "@/app/components/ui/Popup";
 
 export default function FormEditProfile({ user }: { user: User }) {
   const [formState, formAction] = useActionState(updateUserProfile, {
@@ -42,7 +43,11 @@ export default function FormEditProfile({ user }: { user: User }) {
   };
   return (
     <>
-      <div>{formState.message && <p>{formState.message}</p>}</div>
+      <div>
+        {formState.message && (
+          <Popup message={formState.message} type={formState.type} />
+        )}
+      </div>
 
       <form action={formAction}>
         <input type="hidden" name="id" id="id" value={user.id} />
