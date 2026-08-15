@@ -6,7 +6,7 @@ export interface User {
   name: string | null;
   email: string | null;
   title: string | null;
-  stacks: string[];
+  bio: string | null;
   location: string | null;
   background: string | null;
   emailVerified: Date | null;

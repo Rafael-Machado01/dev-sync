@@ -1,18 +1,18 @@
-import { auth } from "auth";
-import { getUserByEmail } from "@/app/actions";
 import Image from "next/image";
 import Avatar from "@/app/components/ui/Avatar";
 import React from "react";
 import LocationIcon from "@/app/components/svg/LocationIcon";
+import { User } from "@/app/types/User";
 
 interface ProfileDataProps {
   children: React.ReactNode;
+  user: User;
 }
 
-export default async function ProfileData({ children }: ProfileDataProps) {
-  const session = await auth();
-  const user = await getUserByEmail(session?.user?.email);
-
+export default async function ProfileData({
+  children,
+  user,
+}: ProfileDataProps) {
   return (
     <>
       <div className="relative h-19">
@@ -41,9 +41,10 @@ export default async function ProfileData({ children }: ProfileDataProps) {
 
       <div className="-mt-8 px-5 pb-5 pt-0">
         <Avatar
-          src={user?.image}
+          src={user?.image ?? "/avatar.png"}
           alt={`Foto de perfil de ${user?.name}`}
           size={56}
+          className={`w-[56] h-[56] `}
           ring
         />
 
@@ -53,11 +54,13 @@ export default async function ProfileData({ children }: ProfileDataProps) {
           <p className="mt-0.5 text-xs text-drac-comment">
             {user?.title ?? "Newbie"}
           </p>
+          <p className="mt-1 text-xs text-drac-comment">
+            {user?.bio ?? "Make a edit profile"}
+          </p>
           <p className="mt-0.5 text-xs text-drac-comment">
-            <LocationIcon className="inline-block size-2.5 text-drac-cyan mr-1" />
+            <LocationIcon className="inline-block size-2.5 text-drac-green mr-1" />
             {user?.location ?? "Earth"}
           </p>
-          <div className="flex gap-2 mt-2"></div>
         </div>
         {children}
       </div>

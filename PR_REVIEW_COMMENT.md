@@ -1,77 +1,99 @@
-# Revisão — PR: Modal add
+# Revisão — PR: Edição de perfil funcional
 
-Review geral: a **refatoração tá muito boa**, a parte de **bugs/lixo precisa de atenção**.
+Review geral: a **feature tá no caminho certo**, mas **o build está quebrado** (`tsc` acusa 3 erros) e o **fluxo de dados tem um bug funcional que impede o card de atualizar**. Upload também precisa de endurecimento antes de ir pra produção.
+
+> Verificado com `npx tsc --noEmit` (3 erros) e `npm run lint` (2 warnings).
 
 ---
 
 ## ✅ Boas práticas (parabéns)
 
-- **Quebra do `SideCardProfile` em `ProfileData` + `EditProfile`** — composição via `children`, separando responsabilidade de dados e interação. Ficou limpo e reutilizável.
-- **Organização de pastas** — `sidecard/` agrupando os componentes relacionados. Corrigiu imports quebrados (`Button`). Estrutura ficou muito mais legível.
-- **`Modal.tsx` reutilizável** — ter o modal desacoplado (backdrop, scroll, título) é a abordagem certa.
-- **Constantes `tailwindData`** — centralizar strings de classe evita repetição. Boa.
-- **Utilities de glow no `globals.css`** — tirar o `shadow-[0_0_...]` inline e virar tokens (`shadow-glow-purple`, etc.) é design system de verdade.
-- **Migração Prisma** — migração + tipo `User.ts` atualizados juntos. Correto.
+- **Server action `updateUserProfile`** — `auth()` + checagem `session.user.id !== id` é o instinto certo contra editar perfil de terceiros.
+- **Modal controlado** (`isOpen`/`onClose`) — corrigiu o bug da segunda abertura apontado na review do PR #3. O `"use client"` e o `useState` interno saíram. Bem resolvido.
+- **`Input`/`Label` reutilizáveis** — primitives corretos, agora com classes centralizadas.
+- **Fluxo de dados melhorado** — `SideCardProfile` busca o usuário uma vez e repassa via props, matando a busca duplicada de dentro do `ProfileData`.
+- **Fallbacks de imagem** restaurados (`?? "/bgsetup.jpg"`, `?? "/avatar.png"`) — o erro de `src={null}` sumiu.
 
 ---
 
-## 🐛 Bugs (lixo de dev — precisa corrigir)
+## 🐛 Bugs (crítico — precisa corrigir)
 
-### 1. Dupla gestão de estado no modal — `EditProfile.tsx` + `Modal.tsx`
-```tsx
-// EditProfile.tsx
-const [state, setState] = useState(false);      // estado 1
-{state ? <Modal title="Edit Profile">a</Modal> : ""}
-
-// Modal.tsx
-const [state, setState] = useState(true);        // estado 2 — sempre true
-const handleClickClose = () => setState(false);
+### 1. BUILD QUEBRADO — `tsc --noEmit` acusa 3 erros
+```ts
+app/components/sidecard/FormEditProfile.tsx:15  TS2769  useFormState: FormState incompatível
+app/components/sidecard/FormEditProfile.tsx:28  TS2345  setNewBackground(reader.result) — tipo
+app/components/sidecard/FormEditProfile.tsx:38  TS2345  setNewAvatar(reader.result) — tipo
+app/components/sidecard/FormEditProfile.tsx:101 TS2741  Avatar: prop 'ring' é obrigatória e não foi passada
 ```
-Dois estados controlando a mesma coisa. Pior: quando o usuário fecha o modal pelo `✕` ou pelo backdrop, o `state` do `EditProfile` **continua `true`** — ao clicar em "EDITAR PERFIL" de novo, o `!state` **fecha** em vez de abrir. **O modal não abre a segunda vez.**
+- **TS2769**: o `useFormState` infere `type: string` do initialState e não casa com o literal `"success" | "error"` da `FormState`. Tipar o initialState (`const initialState: FormState = { message: "", type: "success" }`).
+- **TS2345**: `useState(null)` infere `SetStateAction<null>`. Trocar por `useState<string | null>(null)`.
+- **TS2741**: `ring` não é opcional em `AvatarProps`. Tornar opcional ou passar `ring={false}`.
 
-> Fix: `Modal` deveria ser **controlado** pelo pai via `isOpen`/`onClose`. A prop `isOpen` já está na interface mas **nem é usada** — lixo morto.
-
-### 2. `Image` sem fallback — `ProfileData.tsx`
-```tsx
-src={user?.background}
+### 2. O card NÃO reflete a edição — bug funcional
+```ts
+// app/lib/auth-user.ts
+return session.user;   // só tem id, name, email, image
 ```
-`background` é `String?` no schema. Se o usuário não tem capa, vira `src={null}` → **erro de runtime no `next/image`**. Tinha uma imagem estática (`/bgsetup.jpg`) como fallback e foi jogada fora junto. Precisa de `src={user?.background ?? "/bgsetup.jpg"}`.
+`getCurrentUser()` devolve os dados da **sessão criada no login** — `bio`, `title`, `location`, `background`, `stacks` **não existem na sessão**. Resultado: depois de salvar, o `ProfileData` continua renderizando fallbacks (`"Newbie"`, `"Earth"`, capa padrão) até o usuário fazer logout/login. O banco muda, a UI não.
 
-### 3. Import sem uso — `Logo.tsx`
-```tsx
-import { tailwindData } from "@/app/constants/tailwindData";
-```
-Importado e **nunca usado**. Lixo.
+> Fix: buscar no banco de dados:
+> ```ts
+> const user = await prisma.user.findUnique({ where: { id: session.user.id } });
+> ```
 
-### 4. Import morto — `page.tsx`
-```tsx
-import Modal from "./components/ui/Modal";
+### 3. Upload inseguro — path traversal + nome não sanitizado
+```ts
+const filePath = path.join(uploadDir, backgroundFile.name);
 ```
-`Modal` importado e **nem renderizado**. Se não está integrado, não comite junto com o PR.
+`backgroundFile.name` vem do cliente. `name = "../../evil"` **escapa da pasta `public/uploads`** via `path.join`. Além disso:
+- sem validação de **MIME** (aceita qualquer arquivo) e **tamanho**;
+- sem controle de **colisão** (dois uploads com mesmo nome sobrescrevem — dá pra ver isso nos commits: `a.jpg` e `blob`).
 
-### 5. Props mortas — `Modal.tsx`
-```tsx
-interface ModalProps {
-  className?: string;
-  isOpen?: boolean;   // declarada e nunca usada
-  ...
-}
-```
+> Fix: `crypto.randomUUID()` como nome + extensão sanitizada, validar `file.type` e `file.size`, e usar o caminho como URL via `new URL(...).pathname`.
 
-### 6. Lixo de JSX — `ProfileData.tsx`
-```tsx
-<div className="flex gap-2 mt-2"></div>
-```
-Div **vazia**. Ou vai receber as stacks (que já existem no schema!) ou sai.
+### 4. Arquivos de teste commitados + sem `.gitignore`
+`public/uploads/a.jpg`, `public/uploads/blob` e `ImagePreview.tsx` (0 bytes) foram parar no PR. Remover e adicionar `public/uploads/` ao `.gitignore`.
+
+### 5. Upload em `public/` não sobrevive em produção
+Em Vercel/serverless o filesystem é **efêmero** — o que for gravado em `public/uploads` some entre deploys/instâncias. Para produção precisa de blob storage (Vercel Blob, S3, Cloudinary) ou ao menos deixar documentado que é só dev.
+
+---
+
+## 🐛 Falta de tratamento de erro
+
+- `prisma.user.update` e `fs.writeFile` sem `try/catch` — qualquer falha estoura erro não tratado na action, sem feedback pro usuário. Retornar `{ message, type: "error" }`.
+- Sem validação de formulário (ex.: nome vazio, bio gigante) — um `zod` resolveria.
+
+---
+
+## 🧹 Refatorações recomendadas
+
+- **Upload duplicado** — dois blocos idênticos (background e image). Extrair helper:
+  ```ts
+  async function saveFile(file: File): Promise<string | undefined> {
+    if (!file || file.size === 0) return undefined;
+    // validação + uuid + write
+    return `/uploads/${name}`;
+  }
+  ```
+- **`formState` não usado** na action → renomear pra `_formState` (o lint já reclama de unused vars).
+- **Imports desorganizados** em `actions.ts` — `type FormState` e `import path` no meio do arquivo. Importa tudo no topo.
+- **Hidden input `id` desnecessário** — você já tem o `session.user.id`; compare direto e elimine o campo do form (menos superfície de erro).
+- **`getUserByEmail` virou código morto** — remover (ou usar na correção do item 2).
+- **Div vazia** `<div className="flex gap-2 mt-2"></div>` no `ProfileData` — mesma pendência do PR #3, ainda não resolvida.
+- **`useFormState` está deprecado no React 19** — usar `useActionState`.
+- **Sem estado de loading no submit** — o botão "Salvar" permite duplo envio. Desabilitar enquanto processa.
+- **`ImagePreview.tsx` vazio** — implementar ou deletar.
+- **Migração `test_edit`** — renomear pra `add_bio_on_user`.
 
 ---
 
 ## 🧹 Detalhes menores
 
-- `SideCardLoginButtons.tsx`: espaço duplicado no className (`justify-center  items-center`).
-- `EditProfile.tsx`: conteúdo do modal é literalmente `"a"` — placeholder esquecido.
-- `Modal.tsx`: `z-100` não é um valor padrão de z-index no Tailwind — confirmar se compila.
+- `next/image` com `data:` URL (preview do `FileReader`) — **validar**: pode exigir `unoptimized` ou quebrar em produção.
+- `z-100`, `h-19`, `max-w-125`, `bg-black/78` funcionam no **Tailwind v4** (valores dinâmicos) — a dúvida do PR anterior ficou resolvida. Só considerar `z-[100]` pra deixar intencional.
+- `lint`: 2 warnings (`_formData` em `actions.ts`, import `NextAuth` não usado em `next-auth.d.ts`).
 
 ---
 
-**Veredito:** a direção de refatoração é excelente e merece seguir. Mas o modal **quebrado na segunda abertura**, a falta de fallback na `Image` e os imports/JSX mortos não podem ir pra `main` assim. Corrige o estado do modal e o fallback que tá pronto pra merge.
+**Veredito:** a feature está quase lá e a direção é a certa, mas **não pode ir pra `main` assim**: o build quebra no typecheck, o card não atualiza após salvar (item 2) e o upload tem falha de segurança (item 3). Corrige os 3 erros de TS, faz o `getCurrentUser` buscar do banco e endurece o upload — depois disso tá pronto pro merge.

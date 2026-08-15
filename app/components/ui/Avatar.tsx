@@ -4,10 +4,17 @@ interface AvatarProps {
   src: string;
   alt: string;
   size: number;
-  ring: boolean;
+  ring?: boolean;
+  className?: string;
 }
 
-export default function Avatar({ src, alt, size, ring }: AvatarProps) {
+export default function Avatar({
+  src,
+  alt,
+  size,
+  ring,
+  className,
+}: AvatarProps) {
   return (
     <div className="relative shrink-0" style={{ width: size, height: size }}>
       {ring && (
@@ -18,7 +25,7 @@ export default function Avatar({ src, alt, size, ring }: AvatarProps) {
         height={size}
         src={src}
         alt={alt}
-        className={`rounded-full object-cover block ${
+        className={` ${className} rounded-full object-cover w-[${size}] h-[${size}] block ${
           ring
             ? "border-[1.5px] border-drac-purple"
             : "border-[1.5px] border-drac-line"

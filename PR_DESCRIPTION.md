@@ -1,65 +1,71 @@
-# PR: Modal add
+# PR: Edição de perfil funcional
 
 ## Resumo
 
-Refatoração da estrutura de componentes do sidecard + novo modal de edição de perfil, com novos campos de dados do usuário e melhorias visuais (glow).
+Completa a feature de edição de perfil iniciada no PR #3 (Modal add): agora o modal abre um formulário funcional que permite editar nome, cargo, bio, localização e trocar capa/avatar (com upload e preview). Inclui também a componentização de inputs reutilizáveis e as correções apontadas na review do PR #3.
 
 ## O que mudou
 
-### Nova estrutura de pastas (`app/components/`)
-- `ui/NavBar.tsx` → movido para `app/components/NavBar.tsx`
-- `SideCardProfile.tsx` → dividido em `sidecard/ProfileData.tsx` (dados) e novo `sidecard/SideCardProfile.tsx` (composição)
-- `SideCardLoginButtons.tsx` e `SideCard.tsx` → movidos para `sidecard/`
-- Importações corrigidas: `@/app/components/Button` → `@/app/components/ui/Button`
-
-### Nova feature: Edição de perfil
-- **`ui/Modal.tsx`** — componente reutilizável de modal (backdrop com blur, scroll interno, fechar por overlay ou botão)
-- **`sidecard/EditProfile.tsx`** — botão "[ EDITAR PERFIL ]" que abre o modal
-- **`svg/LocationIcon.tsx`** — novo ícone de localização
+### Nova feature: Edição de perfil funcional
+- **`app/actions.ts`** — nova server action `updateUserProfile`:
+  - Verifica sessão (`auth()`) e valida que o usuário só edita o próprio perfil (`session.user.id === id`)
+  - Faz upload de capa (`background`) e avatar (`image`) para `public/uploads/` via `fs`
+  - Persiste com `prisma.user.update` e chama `revalidatePath("/")`
+  - Retorna `FormState` (`message`/`type`) para feedback no formulário
+- **`sidecard/FormEditProfile.tsx`** (novo) — formulário com `useFormState` + `encType="multipart/form-data"`:
+  - Preview de capa e avatar via `FileReader` antes do envio
+  - Campos: Nome, Cargo, Bio, Localização (com fallbacks `bgsetup.jpg` / `avatar.png`)
+  - Mensagem de sucesso/erro renderizada acima do form
+- **`sidecard/EditProfile.tsx`** — agora recebe `user` via prop e renderiza `<FormEditProfile user={user} />` no modal (substitui o placeholder `"a"`)
+- **`sidecard/SideCardProfile.tsx`** — virou componente async que busca o usuário com `getCurrentUser()` e repassa via props (remove a busca duplicada de dentro do `ProfileData`)
+- **`sidecard/ProfileData.tsx`** — recebe `user` como prop; exibe `bio`; fallback de avatar `/avatar.png`; ícone de localização em verde
 
 ### Dados do usuário (Prisma)
-- Migração `add_infosprofiles`: novas colunas `title`, `stacks` (string[]) e `background` no modelo `User`
-- `ProfileData` agora usa `user?.background` como capa (em vez de imagem estática) e exibe localização ("São Paulo BR")
+- Novo campo `bio` no modelo `User` (migração `20260814202435_test_edit`), refletido em `app/types/User.ts`
+- Migração `20260810222926_add_location_on_user` (campo `location`)
 
-### Visual
-- Novas utilities de glow em `globals.css`:
-  - `shadow-glow-purple`
-  - `shadow-glow-purple-lg`
-  - `shadow-glow-cyan`
-  - `shadow-glow-red`
-- `Card` agora tem borda + `shadow-glow-purple-lg`; Avatar usa `shadow-glow-purple`
-- Nova constante `tailwindData.centered` para centralização (NavBar, Logo, Button)
-- Botão de login com `shadow-2xl`
+### Componentização (novos primitives em `ui/`)
+- **`ui/Input.tsx`** — input estilizado reutilizável (foco com borda roxa)
+- **`ui/Label.tsx`** — label padronizado
+- **`ui/ImagePreview.tsx`** — placeholder criado para preview de imagem (ver ponto de atenção)
+
+### Correções da review do PR #3
+- `Modal.tsx` agora é **controlado** pelo pai (`isOpen`/`onClose`), removidos `useState` interno e `"use client"` que quebravam a segunda abertura
+- `ProfileData` restaura fallback de imagem (prévia de capa/avatar com `??` em vez de `src={null}`)
+- Removidos imports mortos (`page.tsx` deixa de importar `Modal` sem usar)
 
 ## Arquivos alterados
 
 ```
- app/components/{ui => }/NavBar.tsx                 |  7 ++--
- app/components/sidecard/EditProfile.tsx            | 22 +++++++++++
- app/components/{SideCardProfile => sidecard/ProfileData}.tsx | 27 ++++++++-----
- app/components/{ui => sidecard}/SideCard.tsx       |  4 +-
- app/components/{ => sidecard}/SideCardLoginButtons.tsx | 10 +++--
- app/components/sidecard/SideCardProfile.tsx        | 12 ++++++
- app/components/svg/LocationIcon.tsx                | 14 +++++++
- app/components/svg/Logo.tsx                        |  4 +-
- app/components/ui/Avatar.tsx                       |  2 +-
- app/components/ui/Button.tsx                       |  3 +-
- app/components/ui/Card.tsx                         |  2 +-
- app/components/ui/Modal.tsx                        | 45 ++++++++++++++++++++++
- app/constants/tailwindData.ts                      |  3 +-
- app/globals.css                                    | 21 ++++++++++
- app/page.tsx                                       |  5 ++-
- app/types/User.ts                                  | 25 ++++++------
- prisma/migrations/20260809213039_add_infosprofiles/migration.sql |  4 ++
- prisma/schema.prisma                               |  2 +
- 18 files changed, 176 insertions(+), 36 deletions(-)
+ app/actions.ts                                        | 69 ++++++++++++++++++-
+ app/components/sidecard/EditProfile.tsx               |  6 +-
+ app/components/sidecard/FormEditProfile.tsx           | 155 ++++++++++++++++++++++++
+ app/components/sidecard/ProfileData.tsx               | 19 +++----
+ app/components/sidecard/SideCardProfile.tsx           |  8 +-
+ app/components/ui/ImagePreview.tsx                    |  0
+ app/components/ui/Input.tsx                           | 15 ++++++++++
+ app/components/ui/Label.tsx                           | 15 ++++++++++
+ app/components/ui/Modal.tsx                           |  3 --
+ app/page.tsx                                          |  1 -
+ app/types/User.ts                                     |  1 +
+ prisma/migrations/20260810222926_add_location_on_user/migration.sql | 2 +
+ prisma/migrations/20260814202435_test_edit/migration.sql            | 2 +
+ prisma/schema.prisma                                 |  1 +
+ public/avatar.png                                    | Bin 0 -> 1582 bytes
+ public/uploads/a.jpg                                 | Bin 0 -> 150262 bytes
+ public/uploads/blob                                  |  0
+ 17 files changed, 279 insertions(+), 18 deletions(-)
 ```
 
-## Ponto de atenção
+## Pontos de atenção
 
-`app/page.tsx` importa `Modal` mas ainda não o renderiza — a integração da feature está em andamento.
+- `ui/ImagePreview.tsx` está **vazio** (0 bytes) — placeholder aguardando implementação ou deve ser removido
+- `public/uploads/a.jpg` e `public/uploads/blob` parecem **arquivos de teste** de upload — avaliar se entram no PR
+- Upload não sanitiza nome de arquivo nem valida tipo/tamanho — ok para dev, mas necessário tratar antes de produção
+- `migration.sql` nomeada `test_edit` deveria ser renomeada (ex.: `add_bio_on_user`) antes de merge
 
 ## Checklist
 
 - [ ] Revisar pontos de atenção
-- [ ] Testar fluxo de edição de perfil
+- [ ] Testar upload de capa/avatar e edição dos campos
+- [ ] Confirmar comportamento da segunda abertura do modal
