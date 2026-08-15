@@ -44,6 +44,7 @@ export default async function ProfileData({
           src={user?.image ?? "/avatar.png"}
           alt={`Foto de perfil de ${user?.name}`}
           size={56}
+          className={`w-[56] h-[56] `}
           ring
         />
 
@@ -60,7 +61,6 @@ export default async function ProfileData({
             <LocationIcon className="inline-block size-2.5 text-drac-green mr-1" />
             {user?.location ?? "Earth"}
           </p>
-          <div className="flex gap-2 mt-2"></div>
         </div>
         {children}
       </div>

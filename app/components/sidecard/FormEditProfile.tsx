@@ -1,5 +1,5 @@
 "use client";
-import { useFormState } from "react-dom";
+import { useActionState } from "react";
 import { updateUserProfile } from "@/app/actions";
 import Label from "@/app/components/ui/Label";
 import Input from "@/app/components/ui/Input";
@@ -8,16 +8,16 @@ import { tailwindData } from "@/app/constants/tailwindData";
 import Avatar from "@/app/components/ui/Avatar";
 import Image from "next/image";
 import { useState } from "react";
-
 import { User } from "@/app/types/User";
+import type { FormState } from "@/app/actions";
 
 export default function FormEditProfile({ user }: { user: User }) {
-  const [formState, formAction] = useFormState(updateUserProfile, {
+  const [formState, formAction] = useActionState(updateUserProfile, {
     message: "",
     type: "success",
-  });
-  const [newBackground, setNewBackground] = useState(null);
-  const [newAvatar, setNewAvatar] = useState(null);
+  } as FormState);
+  const [newBackground, setNewBackground] = useState<string | null>(null);
+  const [newAvatar, setNewAvatar] = useState<string | null>(null);
 
   const handleBackgroundChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -44,7 +44,7 @@ export default function FormEditProfile({ user }: { user: User }) {
     <>
       <div>{formState.message && <p>{formState.message}</p>}</div>
 
-      <form action={formAction} encType="multipart/form-data">
+      <form action={formAction}>
         <input type="hidden" name="id" id="id" value={user.id} />
         <div className="relative h-19">
           <label
@@ -89,7 +89,7 @@ export default function FormEditProfile({ user }: { user: User }) {
         </div>
         <div className="-mt-8 px-5 pb-5">
           <div className="relative h-14 w-14">
-            <label className="absolute inset-0 cursor-pointer" htmlFor="avatar">
+            <label className="absolute inset-0 cursor-pointer" htmlFor="image">
               <input
                 type="file"
                 id="image"
@@ -102,6 +102,7 @@ export default function FormEditProfile({ user }: { user: User }) {
                 src={newAvatar ?? user?.image ?? "/avatar.png"}
                 alt={`Foto de perfil de ${user?.name}`}
                 size={56}
+                className="w-[56] h-[56]"
               />
 
               <span className="absolute inset-0 flex items-center justify-center rounded-full text-xs text-white opacity-0 transition-opacity hover:opacity-100 bg-black/40">

@@ -6,7 +6,7 @@ import { signIn, signOut, auth } from "auth";
 import { promises as fs } from "fs";
 import { revalidatePath } from "next/cache";
 
-type FormState = {
+export type FormState = {
   message: string;
   type: "success" | "error";
 };
