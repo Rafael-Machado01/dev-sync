@@ -13,7 +13,7 @@ export default function Label({
 }: LabelProps) {
   return (
     <label
-      className={`block mt-2 text-xs text-drac-comment font-bold mb-1.5" ${className}`}
+      className={`block mt-2 text-xs text-drac-comment font-bold mb-1.5 ${className}`}
       {...props}
     >
       {text}

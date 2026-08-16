@@ -123,7 +123,7 @@ export async function newPost(
   if (session.user.id !== userId)
     return { message: "Não autorizado.", type: "error" };
 
-  if (!caption) {
+  if (!caption || caption.length < 5) {
     return { message: "Legenda é obrigátorio", type: "error" };
   }
 

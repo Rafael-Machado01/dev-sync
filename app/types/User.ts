@@ -1,5 +1,6 @@
 import { Like } from "./Like";
 import { Post } from "./Post";
+import { Comment } from "./Comment";
 
 export interface User {
   id: string;
