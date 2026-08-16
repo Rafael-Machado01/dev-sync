@@ -1,10 +1,41 @@
+# PR #7 — Featature newPost
+
+- **Status:** open
+- **Link:** https://github.com/Rafael-Machado01/dev-sync/pull/7
+
+## Alterações principais
+
+### Nova feature — criação de posts
+
+- `app/components/posts/NewPost.tsx`: formulário de criação de post com avatar do usuário, textarea de legenda (5–225 caracteres), preview de imagem e botão "Publicar" (desabilitado até a legenda ter o tamanho mínimo).
+- `app/components/posts/Posts.tsx`: componente servidor que busca o usuário logado e renderiza o `NewPost`.
+- `app/actions.ts`: nova server action `newPost` com validação de sessão/autorização (usuário deve ser o dono do `id`), upload da imagem para `public/uploads` e criação do registro via Prisma (`prisma.post.create`), seguido de `revalidatePath("/")`.
+- `app/page.tsx`: integra o feed de posts no `main` do layout.
+
+### Modelo de dados
+
+- `prisma/schema.prisma` + migration: `Post.imageUrl` agora é opcional (`String?`), permitindo posts apenas com legenda.
+- `app/types/Post.ts`: `imageUrl` atualizado para `string | null`.
+
+### Componentes de UI
+
+- `ImagePreview.tsx`: implementado preview da imagem selecionada (FileReader + Data URL) com botão "Remover Imagem" e input de arquivo escondido.
+- `TextArea.tsx` (novo): textarea estilizado reutilizável.
+- `Input.tsx` / `Label.tsx`: classes extraídas para `tailwindData`; `Label` agora aceita `className` e `children` (permitindo input aninhado).
+- `Avatar.tsx`: simplificação do anel/borda.
+- `Card.tsx`, `Modal.tsx`, `FormEditProfile.tsx`: pequenos ajustes de estilo; botão "Salvar" do perfil agora usa `tailwindData.saveButton`.
+- `app/constants/tailwindData.ts`: novas entradas `input`, `saveButton` e `disabledButton`.
+
+---
+
+## Comentários
+
+### Rafael-Machado01 — 2026-08-16
 # 🧹 Sugestões de refatoração
 
 Review de qualidade, sem bloqueios. A feature funciona, mas há pontos de **segurança**, **duplicação** e **qualidade** que valem a pena tratar antes de evoluir o feed.
 
----
-
-## 🔴 Segurança / correção
+### 🔴 Segurança / correção
 
 1. **Upload de arquivos sem validação** — `app/actions.ts:74-92` e `app/actions.ts:130-139`
    - Nenhuma validação de **tipo** (`accept="image/*"` é só UI) nem de **tamanho**. Dá pra enviar qualquer arquivo (`.html`, `.js`, executáveis) para `/public/uploads`, que é servido publicamente.
@@ -21,9 +52,7 @@ Review de qualidade, sem bloqueios. A feature funciona, mas há pontos de **segu
 
 4. **Import morto** — `app/actions.ts:8` `redirect` importado e nunca usado (o ESLint deve estar reclamando).
 
----
-
-## 🟡 Duplicação / arquitetura
+### 🟡 Duplicação / arquitetura
 
 5. **Upload duplicado em 2 lugares** — `updateUserProfile` e `newPost` repetem o mesmo bloco de `mkdir` + `writeFile`. Extraia para `app/lib/upload.ts`:
 
@@ -46,9 +75,7 @@ Review de qualidade, sem bloqueios. A feature funciona, mas há pontos de **segu
 
 8. **Tipos duplicados à mão** — `app/types/User.ts`, `Post.ts`, `Like.ts`, `Comment.ts` espelham o schema Prisma. Considere derivar direto do client (`Prisma.UserGetPayload<...>` / `User` de `@prisma/client`) para não divergir.
 
----
-
-## 🟠 UX / comportamento
+### 🟠 UX / comportamento
 
 9. **Botão "Publicar"** — `NewPost.tsx:58`: a "desabilitação" é só visual (classe). Use `disabled={canPost.trim().length < 5}` no `<button>` para impedir o submit de verdade.
 
@@ -64,9 +91,7 @@ Review de qualidade, sem bloqueios. A feature funciona, mas há pontos de **segu
 
     Sobrou um `"` no final. E `FormEditProfile.tsx:129` passa `id="title"` num `<label>` (não deveria estar lá).
 
----
-
-## 🔵 Estilo / consistência
+### 🔵 Estilo / consistência
 
 13. **Tailwind dinâmico não gera classe** — `Avatar.tsx:28` usa `w-[${size}] h-[${size}]` com template string; o Tailwind não enxerga valores dinâmicos, então essas classes nunca existem (o `width/height` do `<Image>` já resolve). Remova. Idem `w-[44] h-[44]` nos callers.
 

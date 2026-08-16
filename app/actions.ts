@@ -5,6 +5,7 @@ import { User } from "@prisma/client";
 import { signIn, signOut, auth } from "auth";
 import { promises as fs } from "fs";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 export type FormState = {
   message: string;
@@ -26,7 +27,6 @@ export async function getUserByEmail(
 
 export async function signInWithProvider(
   provider: "google" | "github",
-  _formData: FormData,
 ): Promise<void> {
   await signIn(provider);
 }
@@ -52,7 +52,22 @@ export async function updateUserProfile(
 
   if (session.user.id !== id)
     return { message: "Não autorizado.", type: "error" };
-
+  if (name.length < 4) {
+    return {
+      message: "O nome deve conter no mínimo 4 Caracteres ",
+      type: "error",
+    };
+  } else if (bio.length <= 5) {
+    return {
+      message: "A bio deve conter no mínimo 5 Caracteres ",
+      type: "error",
+    };
+  } else if (location.length <= 4) {
+    return {
+      message: "A Localização deve conter no mínimo 4 Caracteres ",
+      type: "error",
+    };
+  }
   let backgroundUrl;
   let imageUrl;
 
@@ -93,4 +108,47 @@ export async function updateUserProfile(
   revalidatePath("/");
 
   return { message: "Perfil Atualizado com sucesso.", type: "success" };
+}
+export async function newPost(
+  formState: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  const session = await auth();
+  if (!session) return { message: "Não autorizado.", type: "error" };
+
+  const userId = formData.get("id") as string;
+  const caption = formData.get("caption") as string;
+  const imageFile = formData.get("image") as File;
+
+  if (session.user.id !== userId)
+    return { message: "Não autorizado.", type: "error" };
+
+  if (!caption || caption.length < 5) {
+    return { message: "Legenda é obrigátorio", type: "error" };
+  }
+
+  let imageUrl;
+  if (imageFile && imageFile.size != 0) {
+    const uploadDir = path.join(process.cwd(), "public", "uploads");
+    await fs.mkdir(uploadDir, { recursive: true });
+    const filePath = path.join(uploadDir, imageFile.name);
+    const arrayBuffer = await imageFile.arrayBuffer();
+
+    await fs.writeFile(filePath, Buffer.from(arrayBuffer));
+    imageUrl = `/uploads/${imageFile.name}`;
+  }
+
+  const newData = {
+    userId,
+    caption,
+    ...(imageUrl && { imageUrl: imageUrl }),
+  };
+  await prisma.post.create({
+    data: newData,
+  });
+  revalidatePath("/");
+  return {
+    message: "Publicado com sucesso!",
+    type: "success",
+  };
 }

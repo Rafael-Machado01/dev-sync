@@ -10,6 +10,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { User } from "@/app/types/User";
 import type { FormState } from "@/app/actions";
+import Popup from "@/app/components/ui/Popup";
 
 export default function FormEditProfile({ user }: { user: User }) {
   const [formState, formAction] = useActionState(updateUserProfile, {
@@ -42,7 +43,11 @@ export default function FormEditProfile({ user }: { user: User }) {
   };
   return (
     <>
-      <div>{formState.message && <p>{formState.message}</p>}</div>
+      <div>
+        {formState.message && (
+          <Popup message={formState.message} type={formState.type} />
+        )}
+      </div>
 
       <form action={formAction}>
         <input type="hidden" name="id" id="id" value={user.id} />
@@ -53,6 +58,7 @@ export default function FormEditProfile({ user }: { user: User }) {
           >
             <input
               type="file"
+              accept="image/*"
               id="background"
               name="background"
               className="hidden"
@@ -142,10 +148,7 @@ export default function FormEditProfile({ user }: { user: User }) {
             defaultValue={user.location || ""}
           />
           <div className={tailwindData.centered}>
-            <Button
-              className="bg-drac-purple text-drac-fg rounded-xl mt-2"
-              type="submit"
-            >
+            <Button className={`${tailwindData.saveButton} mt-2`} type="submit">
               Salvar
             </Button>
           </div>
