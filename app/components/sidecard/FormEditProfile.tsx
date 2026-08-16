@@ -58,6 +58,7 @@ export default function FormEditProfile({ user }: { user: User }) {
           >
             <input
               type="file"
+              accept="image/*"
               id="background"
               name="background"
               className="hidden"
@@ -147,10 +148,7 @@ export default function FormEditProfile({ user }: { user: User }) {
             defaultValue={user.location || ""}
           />
           <div className={tailwindData.centered}>
-            <Button
-              className="bg-drac-purple text-drac-fg rounded-xl mt-2"
-              type="submit"
-            >
+            <Button className={`${tailwindData.saveButton} mt-2`} type="submit">
               Salvar
             </Button>
           </div>

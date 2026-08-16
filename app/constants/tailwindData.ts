@@ -7,4 +7,8 @@ export const tailwindData = {
   signInButton:
     "bg-transparent border border-drac-purple/25 text-drac-purple hover:shadow-glow-purple",
   centered: "flex justify-center items-center",
+  input:
+    "w-full bg-drac-surface border border-drac-line rounded-md py-2.5 px-3 text-drac-fg text-sm box-border outline-none focus:border-drac-purple transition-all duration-200",
+  saveButton: "bg-drac-purple text-drac-fg rounded-xl",
+  disabledButton: "bg-drac-surface text-drac-comment opacity-50  h-9",
 };
