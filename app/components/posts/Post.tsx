@@ -3,6 +3,7 @@ import Card from "@/app/components/ui/Card";
 import Avatar from "@/app/components/ui/Avatar";
 import Image from "next/image";
 import Line from "../ui/Line";
+import LikeButton from "./LikeButton";
 
 interface PostProps {
   post: PostType;
@@ -10,6 +11,10 @@ interface PostProps {
 }
 
 export default function Post({ post, currentUserId }: PostProps) {
+  let isLiked = false;
+  if (post.likes) {
+    isLiked = post.likes.some((like) => like.userId == currentUserId);
+  }
   function generateNodeId() {
     return crypto.randomUUID().replaceAll("-", "").slice(0, 6).toUpperCase();
   }
@@ -54,6 +59,14 @@ export default function Post({ post, currentUserId }: PostProps) {
         </div>
       </div>
       <Line />
+      <div className="flex items-center">
+        <LikeButton
+          postId={post.id}
+          initialLikesCount={post.likes?.length ? post.likes.length : 0}
+          isLiked={isLiked}
+          currentUserId={currentUserId}
+        />
+      </div>
     </Card>
   );
 }

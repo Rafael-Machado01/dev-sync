@@ -218,9 +218,6 @@ export async function likePost(
   if (!session) {
     throw new Error("Não autorizado!");
   }
-  if (session.user.userId !== userId) {
-    throw new Error("Não autorizado!");
-  }
 
   const trueLike = await prisma.like.findFirst({
     where: {
