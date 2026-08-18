@@ -58,4 +58,8 @@
     box-shadow: 0 0 10px
       color-mix(in srgb, var(--color-drac-red) 13%, transparent);
   }
+  .shadow-glow-green {
+    box-shadow: 0 0 6px
+      color-mix(in srgb, var(--color-drac-green) 13, transparent);
+  }
 }
