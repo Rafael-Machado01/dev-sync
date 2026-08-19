@@ -1,10 +1,14 @@
 import { getUserPosts } from "@/app/actions";
-import { auth } from "auth";
+import getCurrentUser from "@/app/lib/auth-user";
 export default async function MyPosts() {
-  const session = await auth();
-  let userId = null;
-  if (session) {
-    userId = session.user.userId;
+  const logged = await getCurrentUser();
+  if (!logged) {
+    return null;
+  }
+  const userId = logged.id;
+  
+  if (!userId) {
+    return null;
   }
   const posts = await getUserPosts(userId);
 

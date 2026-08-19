@@ -34,7 +34,7 @@ export default function Post({ post, currentUserId }: PostProps) {
           src={post.user.image || "/avatar.png"}
           alt={`Foto de perfil de ${post.user.name}`}
           size={44}
-          className="w-[44] h-[44]"
+          className="size-11"
           ring
         />
         <div className="flex-1 min-w-0">
@@ -49,7 +49,7 @@ export default function Post({ post, currentUserId }: PostProps) {
               src={post.imageUrl || ""}
               alt={post.caption || "Post sem descrição"}
               width={400}
-              height={400}
+              height={250}
               className="rounded-xl m-2 w-[400] h-[250] object-fill"
             />
           ) : (

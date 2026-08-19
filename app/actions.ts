@@ -5,13 +5,13 @@ import { User } from "@prisma/client";
 import { signIn, signOut, auth } from "auth";
 import { promises as fs } from "fs";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
+import path from "path";
+import getCurrentUser from "./lib/auth-user";
 
 export type FormState = {
   message: string;
   type: "success" | "error";
 };
-import path from "path";
 
 export async function getUserByEmail(
   email: string | null,
@@ -154,11 +154,11 @@ export async function newPost(
 }
 
 export async function getUserPosts(userId: string) {
-  const session = await auth();
-  if (!session) {
+  const logged = await getCurrentUser();
+  if (logged === null) {
     throw new Error("Não autorizado!");
   }
-  if (session.user.userId !== userId) {
+  if (logged.id != userId) {
     throw new Error("Não autorizado!");
   }
   return await prisma.post.findMany({
@@ -174,18 +174,20 @@ export async function getUserPosts(userId: string) {
   });
 }
 
-export default async function deletePost(
+export async function deletePost(
   formData: FormData,
   userId: string,
   postId: string,
 ) {
-  const session = await auth();
-  if (!session) {
-    throw new Error("Não autorizado!");
+  const logged = await getCurrentUser();
+
+  if (logged === null) {
+    return { message: "Não autorizado!", type: "error" };
   }
-  if (session.user.userId !== userId) {
-    throw new Error("Não autorizado!");
+  if (logged.id != userId) {
+    return { message: "Não autorizado!", type: "error" };
   }
+
   await prisma.post.delete({
     where: { id: postId },
   });
@@ -214,9 +216,13 @@ export async function likePost(
   postId: string,
   userId: string,
 ): Promise<FormState> {
-  const session = await auth();
-  if (!session) {
+  const logged = await getCurrentUser();
+  if (!logged) {
     throw new Error("Não autorizado!");
+  }
+  const loggedId = logged?.id;
+  if (loggedId != userId) {
+    throw new Error("Não Autorizado!");
   }
 
   const trueLike = await prisma.like.findFirst({
@@ -245,18 +251,13 @@ export async function likePost(
   return { message: "Você curtiu este post", type: "success" };
 }
 
-export async function addComment(
-  postId: string,
-  userId: string,
-  content: string,
-) {
-  const session = await auth();
-  if (!session) {
+export async function addComment(postId: string, content: string) {
+  const logged = await getCurrentUser();
+
+  if (logged === null) {
     throw new Error("Não autorizado!");
   }
-  if (session.user.userId !== userId) {
-    throw new Error("Não autorizado!");
-  }
+  const userId = logged?.id;
 
   await prisma.comment.create({
     data: {

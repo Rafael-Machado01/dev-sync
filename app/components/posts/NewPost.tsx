@@ -1,7 +1,6 @@
-"use client"
+"use client";
 import { User } from "@/app/types/User";
 import { useActionState, useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import Card from "@/app/components/ui/Card";
 import Popup from "../ui/Popup";
 import Avatar from "@/app/components/ui/Avatar";
@@ -9,22 +8,29 @@ import TextArea from "@/app/components/ui/TextArea";
 import ImagePreview from "../ui/ImagePreview";
 import Button from "../ui/Button";
 import { tailwindData } from "@/app/constants/tailwindData";
-import {newPost} from "@/app/actions"
-export default function NewPost({ user }: { user: User }) {
+import { FormState, newPost } from "@/app/actions";
+
+interface NewPostProps {
+  isAuth: User;
+}
+
+export default function NewPost({ isAuth }: NewPostProps) {
   const [imageKey, setImageKey] = useState(0);
   const [canPost, setCanPost] = useState("");
-  const [formState, formAction] = useActionState(newPost, {
+
+  const initialState: FormState = {
     message: "",
     type: "success",
-  });
-  const router = useRouter();
+  }; // Isso cria uma const tipada FormState
+
+  const [formState, formAction] = useActionState(newPost, initialState);
   useEffect(() => {
     if (!formState.message || formState.type !== "success") {
       return;
     }
     setCanPost("");
     setImageKey((prev) => prev + 1);
-  },[formState.message,formState.type])
+  }, [formState.message, formState.type]);
 
   return (
     <Card hover={true} className={`p-2`}>
@@ -34,17 +40,17 @@ export default function NewPost({ user }: { user: User }) {
         )}
       </div>
       <form className="flex flex-col p-2" action={formAction}>
-         <input type="hidden" name="id" id="id" value={user.id} />
+        <input type="hidden" name="id" id="id" value={isAuth.id} />
         <div className="flex gap-3">
           <Avatar
             size={44}
-            src={user.image ?? "/avatar.png"}
-            alt={`Foto de perfil de ${user.name}`}
+            src={isAuth.image ?? "/avatar.png"}
+            alt={`Foto de perfil de ${isAuth.name}`}
             className="w-[44] h-[44]"
             ring
           />
           <TextArea
-          onChange={(e) => setCanPost(e.target.value)}
+            onChange={(e) => setCanPost(e.target.value)}
             minLength={5}
             maxLength={225}
             name="caption"
@@ -55,7 +61,15 @@ export default function NewPost({ user }: { user: User }) {
         </div>
         <div className="flex items-end justify-between mt-2">
           <ImagePreview key={imageKey} />
-          <Button className={canPost.length >= 5 ? tailwindData.saveButton : tailwindData.disabledButton}>Publicar -></Button>
+          <Button
+            className={
+              canPost.length >= 5
+                ? tailwindData.saveButton
+                : tailwindData.disabledButton
+            }
+          >
+            Publicar
+          </Button>
         </div>
       </form>
     </Card>
