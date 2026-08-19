@@ -14,7 +14,9 @@ export default function Home() {
         <main className={tailwindData.gridLayoutMain}>
           <Posts />
         </main>
-        <aside className={tailwindData.gridLayoutRightSide}></aside>
+        <aside className={tailwindData.gridLayoutRightSide}>
+          <span>a</span>
+        </aside>
       </div>
     </div>
   );

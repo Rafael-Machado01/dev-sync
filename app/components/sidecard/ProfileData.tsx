@@ -3,6 +3,7 @@ import Avatar from "@/app/components/ui/Avatar";
 import React from "react";
 import LocationIcon from "@/app/components/svg/LocationIcon";
 import { User } from "@/app/types/User";
+import Line from "@/app/components/ui/Line";
 
 interface ProfileDataProps {
   children: React.ReactNode;
@@ -54,6 +55,7 @@ export default async function ProfileData({
           <p className="mt-0.5 text-xs text-drac-comment">
             {user?.title ?? "Newbie"}
           </p>
+          <Line className="mt-1.5" />
           <p className="mt-1 text-xs text-drac-comment">
             {user?.bio ?? "Make a edit profile"}
           </p>

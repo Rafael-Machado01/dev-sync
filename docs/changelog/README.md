@@ -11,3 +11,4 @@ Esta pasta é um **backup** — um arquivo por pull request, incluindo o corpo d
 | [#3](pr-03-modal-add.md) | modal add | merged | 2026-08-10 |
 | [#4](pr-04-edicao-de-perfil-funcional.md) | Edição de perfil funcional | merged | 2026-08-15 |
 | [#7](pr-07-feature-newpost.md) | Featature newPost | open | — |
+| [#8](pr-08-feed-e-likes.md) | Feed de posts, sistema de likes e melhorias gerais | open | — |

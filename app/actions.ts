@@ -152,3 +152,119 @@ export async function newPost(
     type: "success",
   };
 }
+
+export async function getUserPosts(userId: string) {
+  const session = await auth();
+  if (!session) {
+    throw new Error("Não autorizado!");
+  }
+  if (session.user.userId !== userId) {
+    throw new Error("Não autorizado!");
+  }
+  return await prisma.post.findMany({
+    where: { userId },
+    include: {
+      user: true,
+      likes: true,
+      comments: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+}
+
+export default async function deletePost(
+  formData: FormData,
+  userId: string,
+  postId: string,
+) {
+  const session = await auth();
+  if (!session) {
+    throw new Error("Não autorizado!");
+  }
+  if (session.user.userId !== userId) {
+    throw new Error("Não autorizado!");
+  }
+  await prisma.post.delete({
+    where: { id: postId },
+  });
+  revalidatePath("/");
+  return { message: "Post deletado com sucesso!", type: "success" };
+}
+
+export async function getAllPosts() {
+  return await prisma.post.findMany({
+    include: {
+      user: true,
+      likes: true,
+      comments: {
+        include: {
+          user: true,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+}
+
+export async function likePost(
+  postId: string,
+  userId: string,
+): Promise<FormState> {
+  const session = await auth();
+  if (!session) {
+    throw new Error("Não autorizado!");
+  }
+
+  const trueLike = await prisma.like.findFirst({
+    where: {
+      postId,
+      userId,
+    },
+  });
+
+  if (trueLike) {
+    await prisma.like.delete({
+      where: {
+        id: trueLike.id,
+      },
+    });
+  } else {
+    await prisma.like.create({
+      data: {
+        postId,
+        userId,
+      },
+    });
+  }
+
+  revalidatePath("/");
+  return { message: "Você curtiu este post", type: "success" };
+}
+
+export async function addComment(
+  postId: string,
+  userId: string,
+  content: string,
+) {
+  const session = await auth();
+  if (!session) {
+    throw new Error("Não autorizado!");
+  }
+  if (session.user.userId !== userId) {
+    throw new Error("Não autorizado!");
+  }
+
+  await prisma.comment.create({
+    data: {
+      postId,
+      userId,
+      content,
+    },
+  });
+
+  revalidatePath("/");
+}
