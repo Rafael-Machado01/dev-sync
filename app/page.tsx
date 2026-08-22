@@ -4,8 +4,7 @@ import SideCard from "@/app/components/sidecard/SideCard";
 import Posts from "@/app/components/posts/Posts";
 import getCurrentUser from "./lib/auth-user";
 import NewPost from "./components/posts/NewPost";
-import { getAllPosts } from "./actions";
-import { getUserPosts } from "./actions";
+import { getAllPosts, getUserPosts } from "./actions";
 
 export default async function Home() {
   const isAuth = await getCurrentUser();

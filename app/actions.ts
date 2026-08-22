@@ -117,6 +117,7 @@ export async function newPost(
   if (!session) return { message: "Não autorizado.", type: "error" };
 
   const userId = formData.get("id") as string;
+  const visibleId = formData.get("visibleId") as string;
   const caption = formData.get("caption") as string;
   const imageFile = formData.get("image") as File;
 
@@ -124,7 +125,10 @@ export async function newPost(
     return { message: "Não autorizado.", type: "error" };
 
   if (!caption || caption.length < 5) {
-    return { message: "Legenda é obrigátorio", type: "error" };
+    return {
+      message: "Legenda deve conter no mínimo 5 caracteres.",
+      type: "error",
+    };
   }
 
   let imageUrl;
@@ -141,6 +145,7 @@ export async function newPost(
   const newData = {
     userId,
     caption,
+    visibleId,
     ...(imageUrl && { imageUrl: imageUrl }),
   };
   await prisma.post.create({
@@ -212,23 +217,16 @@ export async function getAllPosts() {
   });
 }
 
-export async function likePost(
-  postId: string,
-  userId: string,
-): Promise<FormState> {
+export async function likePost(postId: string): Promise<FormState> {
   const logged = await getCurrentUser();
   if (!logged) {
     throw new Error("Não autorizado!");
   }
   const loggedId = logged?.id;
-  if (loggedId != userId) {
-    throw new Error("Não Autorizado!");
-  }
-
   const trueLike = await prisma.like.findFirst({
     where: {
       postId,
-      userId,
+      userId: loggedId,
     },
   });
 
@@ -242,13 +240,18 @@ export async function likePost(
     await prisma.like.create({
       data: {
         postId,
-        userId,
+        userId: loggedId,
       },
     });
   }
 
   revalidatePath("/");
-  return { message: "Você curtiu este post", type: "success" };
+  if (trueLike) {
+    return { message: "Você Descurtiu este post", type: "success" };
+  } else {
+    return { message: "Você curtiu este post", type: "success" };
+  }
+  
 }
 
 export async function addComment(postId: string, content: string) {
@@ -257,6 +260,10 @@ export async function addComment(postId: string, content: string) {
   if (logged === null) {
     throw new Error("Não autorizado!");
   }
+  if (content.trim().length <= 5) {
+    return null;
+  }
+
   const userId = logged?.id;
 
   await prisma.comment.create({

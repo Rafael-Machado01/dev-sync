@@ -32,6 +32,10 @@ export default function NewPost({ isAuth }: NewPostProps) {
     setImageKey((prev) => prev + 1);
   }, [formState.message, formState.type]);
 
+  const randomHex = () => {
+    return crypto.randomUUID().replaceAll("-", "").slice(0, 6).toUpperCase();
+  };
+  const visibleId = randomHex();
   return (
     <Card hover={true} className={`p-2`}>
       <div>
@@ -41,6 +45,12 @@ export default function NewPost({ isAuth }: NewPostProps) {
       </div>
       <form className="flex flex-col p-2" action={formAction}>
         <input type="hidden" name="id" id="id" value={isAuth.id} />
+        <input
+          type="hidden"
+          name="visibleId"
+          id="visibleId"
+          value={visibleId}
+        />
         <div className="flex gap-3">
           <Avatar
             size={44}

@@ -25,16 +25,13 @@ export default function Post({ post, user }: PostProps) {
   }
 
   const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
-
-  function generateNodeId() {
-    return crypto.randomUUID().replaceAll("-", "").slice(0, 6).toUpperCase();
-  }
-  const randomId = generateNodeId();
   return (
     <Card className="py-5 px-6">
       <div className="flex items-center gap-1.5 mb-3.5">
         <div className="w-1.5 h-1.5 rounded-full bg-drac-green shadow-md shadow-glow-green" />
-        <span className="text-xs text-drac-comment">SYN_0x{randomId}</span>
+        <span className="text-xs text-drac-comment">
+          SYN_0x{post.visibleId}
+        </span>
         <div className="flex-1 h-px bg-linear-to-r from-drac-line/40 to-transparent" />
         <span className="text-xs text-drac-line">
           {post.createdAt.toLocaleDateString()}
@@ -61,7 +58,7 @@ export default function Post({ post, user }: PostProps) {
               alt={post.caption || "Post sem descrição"}
               width={400}
               height={250}
-              className="rounded-xl m-2 w-[400] h-[250] object-fill"
+              className="rounded-xl m-2 w-100 h-62.5 object-fill"
             />
           ) : (
             ""
@@ -88,17 +85,12 @@ export default function Post({ post, user }: PostProps) {
         </button>
       </div>
 
-      {isCommentModalOpen ? (
-        (post.comments?.length ?? 0) > 0 ? (
-          <>
-            <CommentSection posts={post} />
-            <NewComment post={post} user={user} />
-          </>
-        ) : (
-          <NewComment post={post} user={user} />
-        )
-      ) : (
-        " "
+      {isCommentModalOpen && (
+        <>
+          {(post.comments?.length ?? 0) > 0 && <CommentSection posts={post} />}
+
+          {user && <NewComment post={post} user={user} />}
+        </>
       )}
     </Card>
   );

@@ -27,7 +27,7 @@ export default function LikeButton({
       setShowPopup(true);
       return null;
     }
-    await likePost(postId, currentUserId);
+    await likePost(postId);
 
     setLiked(!liked);
     setLikeCount(liked ? likesCount - 1 : likesCount + 1);
