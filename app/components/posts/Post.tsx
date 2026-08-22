@@ -1,20 +1,31 @@
+"use client";
 import type { Post as PostType } from "@/app/types/Post";
+import type { User as UserType } from "@/app/types/User";
+
 import Card from "@/app/components/ui/Card";
 import Avatar from "@/app/components/ui/Avatar";
 import Image from "next/image";
 import Line from "../ui/Line";
 import LikeButton from "./LikeButton";
+import CommentButtonIcon from "../svg/CommentButtonIcon";
+
+import { useState } from "react";
+import CommentSection from "./CommentSection";
+import NewComment from "./NewComment";
 
 interface PostProps {
   post: PostType;
-  currentUserId?: string;
+  user: UserType | null;
 }
 
-export default function Post({ post, currentUserId }: PostProps) {
+export default function Post({ post, user }: PostProps) {
   let isLiked = false;
   if (post.likes) {
-    isLiked = post.likes.some((like) => like.userId == currentUserId);
+    isLiked = post.likes.some((like) => like.userId == user?.id);
   }
+
+  const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
+
   function generateNodeId() {
     return crypto.randomUUID().replaceAll("-", "").slice(0, 6).toUpperCase();
   }
@@ -64,9 +75,31 @@ export default function Post({ post, currentUserId }: PostProps) {
           postId={post.id}
           initialLikesCount={post.likes?.length ? post.likes.length : 0}
           isLiked={isLiked}
-          currentUserId={currentUserId}
+          currentUserId={user?.id}
         />
+        <button
+          onClick={() => setIsCommentModalOpen(!isCommentModalOpen)}
+          className="mt-2 ml-1 flex items-center cursor-pointer"
+        >
+          <CommentButtonIcon className="text-drac-comment hover:text-drac-yellow size-4.5" />
+          <span className="text-drac-comment text-xs">
+            {post.comments ? post.comments.length : 0}
+          </span>
+        </button>
       </div>
+
+      {isCommentModalOpen ? (
+        (post.comments?.length ?? 0) > 0 ? (
+          <>
+            <CommentSection posts={post} />
+            <NewComment post={post} user={user} />
+          </>
+        ) : (
+          <NewComment post={post} user={user} />
+        )
+      ) : (
+        " "
+      )}
     </Card>
   );
 }

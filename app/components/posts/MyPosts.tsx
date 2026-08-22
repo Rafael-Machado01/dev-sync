@@ -10,11 +10,11 @@ export default async function MyPosts() {
   if (!userId) {
     return null;
   }
-  const posts = await getUserPosts(userId);
+  const usersposts = await getUserPosts(userId);
 
   return (
     <div>
-      {posts.map((post) => (
+      {usersposts.map((post) => (
         <p key={post.id}>{post.caption}</p>
       ))}
     </div>

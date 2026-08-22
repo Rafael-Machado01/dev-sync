@@ -5,10 +5,13 @@ import Posts from "@/app/components/posts/Posts";
 import getCurrentUser from "./lib/auth-user";
 import NewPost from "./components/posts/NewPost";
 import { getAllPosts } from "./actions";
+import { getUserPosts } from "./actions";
 
 export default async function Home() {
   const isAuth = await getCurrentUser();
   const allPosts = await getAllPosts();
+  const userPosts = isAuth ? await getUserPosts(isAuth.id) : [];
+
   return (
     <div>
       <NavBar isAuth={isAuth} />
@@ -18,7 +21,7 @@ export default async function Home() {
         </aside>
         <main className={tailwindData.gridLayoutMain}>
           {isAuth && <NewPost isAuth={isAuth} />}
-          <Posts posts={allPosts} isAuth={isAuth} />
+          <Posts userPosts={userPosts} posts={allPosts} isAuth={isAuth} />
         </main>
         <aside className={tailwindData.gridLayoutRightSide}>
           <span>a</span>
