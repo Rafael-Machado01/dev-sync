@@ -1,26 +1,43 @@
-import getCurrentUser from "@/app/lib/auth-user";
-import NewPost from "./NewPost";
-import { getAllPosts, getUserByEmail } from "@/app/actions";
+"use client";
+import type { Post as PostType } from "@/app/types/Post";
+import type { User } from "@/app/types/User";
+
 import Line from "../ui/Line";
 import Post from "./Post";
+import { useState } from "react";
 import Button from "../ui/Button";
-export default async function Posts() {
-  const session = await getCurrentUser();
-  if (!session) return null;
-  const user = await getUserByEmail(session?.email ?? null);
-  if (!user) return null;
-  const posts = await getAllPosts();
+
+interface PostsProps {
+  isAuth: User | null;
+  posts: PostType[];
+  userPosts: PostType[];
+}
+
+export default function Posts({ isAuth, posts, userPosts }: PostsProps) {
+  const [onlyPostsUser, setOnlyPostsUser] = useState(false);
   return (
     <>
-      {session && <NewPost user={user} />}
       <div className="flex items-center gap-1.5">
         <span className="text-drac-comment text-xs">FEED_RECENTE</span>
         <Line />
-        <span className="text-drac-line text-xs"> {posts.length} posts </span>
+        {isAuth && userPosts.length > 0 ? (
+          <Button
+            onClick={() => setOnlyPostsUser(!onlyPostsUser)}
+            className="text-xs bg-drac-darker p-1.5 text-drac-comment rounded-xl "
+          >
+            {onlyPostsUser ? "Todos os Posts" : "Meus Posts"}
+          </Button>
+        ) : (
+          <span className="text-xs text-drac-comment ">
+            {posts.length} Posts
+          </span>
+        )}
       </div>
-      {posts.map((post) => (
-        <Post key={post.id} post={post} currentUserId={user.id} />
-      ))}
+      {onlyPostsUser
+        ? userPosts.map((post) => (
+            <Post key={post.id} post={post} user={isAuth} />
+          ))
+        : posts.map((post) => <Post key={post.id} post={post} user={isAuth} />)}
     </>
   );
 }

@@ -3,7 +3,7 @@ import { likePost } from "@/app/actions";
 import LikeButtonIcon from "../svg/LikeButtonIcon";
 import LikedButtonIcon from "../svg/LikedButtonIcon";
 import { useState } from "react";
-import Button from "../ui/Button";
+import Popup from "../ui/Popup";
 
 interface likeButtonProps {
   postId: string;
@@ -20,12 +20,14 @@ export default function LikeButton({
 }: likeButtonProps) {
   const [likesCount, setLikeCount] = useState(initialLikesCount);
   const [liked, setLiked] = useState(isLiked);
+  const [showPopup, setShowPopup] = useState(false);
 
   const handleLike = async () => {
     if (!currentUserId) {
+      setShowPopup(true);
       return null;
     }
-    await likePost(postId, currentUserId);
+    await likePost(postId);
 
     setLiked(!liked);
     setLikeCount(liked ? likesCount - 1 : likesCount + 1);
@@ -33,6 +35,12 @@ export default function LikeButton({
 
   return (
     <div className="flex items-center mt-2">
+      {showPopup && (
+        <Popup
+          message="Entre em sua conta para curtir este post."
+          type="error"
+        />
+      )}
       <button onClick={handleLike} className="mx-1.5 cursor-pointer">
         {liked ? (
           <LikedButtonIcon className="text-drac-red size-3.5 hover:text-drac-comment" />

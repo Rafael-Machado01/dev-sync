@@ -15,7 +15,7 @@ export default function Popup({ message, type }: PopupProps) {
   if (!isVisible) return null;
   return (
     <div
-      className={`fixed top-20 right-6 p-4 bg-drac-card  rounded-md z-200
+      className={`fixed top-20 right-6 p-4 bg-drac-darker font-bold shadow-2xl rounded-md z-200
         ${type === "success" ? "text-drac-green shadow-glow-purple" : "text-drac-red shadow-glow-red"}`}
     >
       <p>{message}</p>

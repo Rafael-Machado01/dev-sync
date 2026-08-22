@@ -2,10 +2,12 @@ import Logo from "@/app/components/svg/Logo";
 import Button from "@/app/components/ui/Button";
 import { logout } from "@/app/actions";
 import LogoutIcon from "./svg/LogoutIcon";
-import getCurrentUser from "@/app/lib/auth-user";
 import { tailwindData } from "../constants/tailwindData";
-export default async function NavBar() {
-  const isLoggedIn = await getCurrentUser();
+import { User } from "../types/User";
+interface NavBarProps {
+  isAuth: User | null;
+}
+export default function NavBar({ isAuth }: NavBarProps) {
   return (
     <header
       className={
@@ -14,7 +16,7 @@ export default async function NavBar() {
     >
       <div className={`h-15.5 ${tailwindData.centered}`}>
         <Logo />
-        {isLoggedIn ? (
+        {isAuth && (
           <Button
             type="button"
             onClick={logout}
@@ -23,8 +25,6 @@ export default async function NavBar() {
           >
             LOGOUT
           </Button>
-        ) : (
-          <></>
         )}
       </div>
     </header>

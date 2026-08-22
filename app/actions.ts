@@ -5,13 +5,13 @@ import { User } from "@prisma/client";
 import { signIn, signOut, auth } from "auth";
 import { promises as fs } from "fs";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
+import path from "path";
+import getCurrentUser from "./lib/auth-user";
 
 export type FormState = {
   message: string;
   type: "success" | "error";
 };
-import path from "path";
 
 export async function getUserByEmail(
   email: string | null,
@@ -117,6 +117,7 @@ export async function newPost(
   if (!session) return { message: "Não autorizado.", type: "error" };
 
   const userId = formData.get("id") as string;
+  const visibleId = formData.get("visibleId") as string;
   const caption = formData.get("caption") as string;
   const imageFile = formData.get("image") as File;
 
@@ -124,7 +125,10 @@ export async function newPost(
     return { message: "Não autorizado.", type: "error" };
 
   if (!caption || caption.length < 5) {
-    return { message: "Legenda é obrigátorio", type: "error" };
+    return {
+      message: "Legenda deve conter no mínimo 5 caracteres.",
+      type: "error",
+    };
   }
 
   let imageUrl;
@@ -141,6 +145,7 @@ export async function newPost(
   const newData = {
     userId,
     caption,
+    visibleId,
     ...(imageUrl && { imageUrl: imageUrl }),
   };
   await prisma.post.create({
@@ -154,11 +159,11 @@ export async function newPost(
 }
 
 export async function getUserPosts(userId: string) {
-  const session = await auth();
-  if (!session) {
+  const logged = await getCurrentUser();
+  if (logged === null) {
     throw new Error("Não autorizado!");
   }
-  if (session.user.userId !== userId) {
+  if (logged.id != userId) {
     throw new Error("Não autorizado!");
   }
   return await prisma.post.findMany({
@@ -174,18 +179,20 @@ export async function getUserPosts(userId: string) {
   });
 }
 
-export default async function deletePost(
+export async function deletePost(
   formData: FormData,
   userId: string,
   postId: string,
 ) {
-  const session = await auth();
-  if (!session) {
-    throw new Error("Não autorizado!");
+  const logged = await getCurrentUser();
+
+  if (logged === null) {
+    return { message: "Não autorizado!", type: "error" };
   }
-  if (session.user.userId !== userId) {
-    throw new Error("Não autorizado!");
+  if (logged.id != userId) {
+    return { message: "Não autorizado!", type: "error" };
   }
+
   await prisma.post.delete({
     where: { id: postId },
   });
@@ -210,19 +217,16 @@ export async function getAllPosts() {
   });
 }
 
-export async function likePost(
-  postId: string,
-  userId: string,
-): Promise<FormState> {
-  const session = await auth();
-  if (!session) {
+export async function likePost(postId: string): Promise<FormState> {
+  const logged = await getCurrentUser();
+  if (!logged) {
     throw new Error("Não autorizado!");
   }
-
+  const loggedId = logged?.id;
   const trueLike = await prisma.like.findFirst({
     where: {
       postId,
-      userId,
+      userId: loggedId,
     },
   });
 
@@ -236,27 +240,31 @@ export async function likePost(
     await prisma.like.create({
       data: {
         postId,
-        userId,
+        userId: loggedId,
       },
     });
   }
 
   revalidatePath("/");
-  return { message: "Você curtiu este post", type: "success" };
+  if (trueLike) {
+    return { message: "Você Descurtiu este post", type: "success" };
+  } else {
+    return { message: "Você curtiu este post", type: "success" };
+  }
+  
 }
 
-export async function addComment(
-  postId: string,
-  userId: string,
-  content: string,
-) {
-  const session = await auth();
-  if (!session) {
+export async function addComment(postId: string, content: string) {
+  const logged = await getCurrentUser();
+
+  if (logged === null) {
     throw new Error("Não autorizado!");
   }
-  if (session.user.userId !== userId) {
-    throw new Error("Não autorizado!");
+  if (content.trim().length <= 5) {
+    return null;
   }
+
+  const userId = logged?.id;
 
   await prisma.comment.create({
     data: {
