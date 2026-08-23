@@ -8,12 +8,25 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o 
 
 ### Adicionado
 
+- **Uploads com EdgeStore + exclusão de posts/comentários + card de stats** (PR #10):
+  - Integração EdgeStore (`@edgestore/react` + `@edgestore/server`): upload direto ao bucket `publicFiles` via rota `app/api/edgestore/[...edgestore]`, substituindo o armazenamento local em `public/uploads` (posts e capa/avatar do perfil).
+  - `deletePost(postId)` e novo `deleteComment(commentId)`: usuário derivado da sessão no servidor; autor pode excluir o próprio post/comentário pelo ícone `TrashIcon`.
+  - `CardStats.tsx` (`SYN_STATUS`) no sidebar direito: total de posts, comentários e likes + status da conta (Online/Offline).
+  - Fonte global JetBrains Mono (`app/fonts.ts`) aplicada no layout raiz.
+
 - **Criação de posts** (PR #7 — *Featature newPost*):
   - `NewPost.tsx`: formulário de criação de post com legenda (5–225 caracteres), preview de imagem e botão "Publicar".
   - `Posts.tsx`: componente servidor que busca o usuário logado e renderiza o formulário.
   - Server action `newPost` com validação de sessão, upload de imagem e `revalidatePath("/")`.
   - `Post.imageUrl` agora é opcional no schema Prisma (`String?`), permitindo posts só com legenda.
   - Componentes de UI: `TextArea` (novo), preview de imagem em `ImagePreview`, `Input`/`Label` com classes centralizadas em `tailwindData`.
+
+### Alterado
+
+- `updateUserProfile` recebe as URLs já hospedadas no EdgeStore, valida existência do usuário e retorna aviso quando nenhuma alteração foi feita.
+- Comentários agora incluem os dados do autor na query (`getUserPosts`).
+- Layout responsivo: grid colapsa para 1/2 colunas em telas menores (sidebar direito apenas em `lg`); botão LOGOUT ajustado.
+- `files.edgestore.dev` adicionado aos domínios de imagem do `next.config.ts`; `zod` adicionado às dependências.
 
 ## [0.2.0] - 2026-08-15
 

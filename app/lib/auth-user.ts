@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import type { User } from "../types/User";
+import type { User } from "@/app/types/User";
 import { prisma } from "./prisma";
 
 export default async function getCurrentUser(): Promise<User | null> {

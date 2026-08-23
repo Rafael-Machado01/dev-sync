@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.3",
+    "@edgestore/react": "^0.8.0",
+    "@edgestore/server": "^0.8.0",
     "@prisma/adapter-pg": "^7.9.1",
     "@prisma/client": "^7.9.1",
     "next": "16.3.0",
@@ -17,7 +19,8 @@
     "pg": "^8.22.0",
     "react": "19.2.8",
     "react-dom": "19.2.8",
-    "tsx": "^4.23.5"
+    "tsx": "^4.23.5",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
