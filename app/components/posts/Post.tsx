@@ -12,6 +12,8 @@ import CommentButtonIcon from "../svg/CommentButtonIcon";
 import { useState } from "react";
 import CommentSection from "./CommentSection";
 import NewComment from "./NewComment";
+import TrashIcon from "../svg/TrashIcon";
+import { deletePost } from "@/app/actions";
 
 interface PostProps {
   post: PostType;
@@ -24,6 +26,10 @@ export default function Post({ post, user }: PostProps) {
     isLiked = post.likes.some((like) => like.userId == user?.id);
   }
 
+  const isMyPost = post.user.id === user?.id;
+  const handleDelete = async () => {
+    deletePost(post.id);
+  };
   const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
   return (
     <Card className="py-5 px-6">
@@ -36,6 +42,11 @@ export default function Post({ post, user }: PostProps) {
         <span className="text-xs text-drac-line">
           {post.createdAt.toLocaleDateString()}
         </span>
+        {isMyPost && (
+          <span onClick={handleDelete}>
+            <TrashIcon className="size-3.5 text-drac-red cursor-pointer hover:text-red-600 transition-all duration-200" />
+          </span>
+        )}
       </div>
       <div className="flex gap-3 mb-2 items-start">
         <Avatar
@@ -87,7 +98,9 @@ export default function Post({ post, user }: PostProps) {
 
       {isCommentModalOpen && (
         <>
-          {(post.comments?.length ?? 0) > 0 && <CommentSection posts={post} />}
+          {(post.comments?.length ?? 0) > 0 && (
+            <CommentSection user={user} posts={post} />
+          )}
 
           {user && <NewComment post={post} user={user} />}
         </>

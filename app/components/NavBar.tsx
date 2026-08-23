@@ -20,7 +20,7 @@ export default function NavBar({ isAuth }: NavBarProps) {
           <Button
             type="button"
             onClick={logout}
-            className="absolute right-8 text-drac-comment hover:text-drac-red"
+            className="absolute text-sm right-8 text-drac-comment hover:text-drac-red"
             icon={<LogoutIcon className="size-5  hover:text-drac-red" />}
           >
             LOGOUT

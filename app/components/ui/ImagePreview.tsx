@@ -3,17 +3,17 @@ import { useState } from "react";
 import Input from "@/app/components/ui/Input";
 import Label from "@/app/components/ui/Label";
 import Image from "next/image";
+import { useEdgeStore } from "@/app/lib/edgestore";
 export default function ImagePreview() {
   const [imageSelect, setImageSelect] = useState<string | null>(null);
-  const handleChangeImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+
+  const { edgestore } = useEdgeStore();
+
+  const handleChangeImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-
-      reader.onloadend = () => {
-        setImageSelect(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+      const res = await edgestore.publicFiles.upload({ file });
+      setImageSelect(res.url);
     }
   };
   const onClickRemove = () => {
@@ -27,7 +27,7 @@ export default function ImagePreview() {
             src={imageSelect}
             height={100}
             width={200}
-            className="rounded-lg object-fill shadow-md w-[200] h-[100]"
+            className="rounded-lg object-cover shadow-md w-[200] h-[100]"
             alt="Pré visualização de imagem."
           />
           <button
@@ -38,6 +38,7 @@ export default function ImagePreview() {
           </button>
         </div>
       )}
+      <input type="hidden" name="imageUrl" value={imageSelect ?? ""} />
       <Label
         text={"📷 foto"}
         className="cursor-pointer bg-drac-surface p-2 rounded-lg"

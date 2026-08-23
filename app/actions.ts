@@ -3,9 +3,7 @@
 import { prisma } from "@/app/lib/prisma";
 import { User } from "@prisma/client";
 import { signIn, signOut, auth } from "auth";
-import { promises as fs } from "fs";
 import { revalidatePath } from "next/cache";
-import path from "path";
 import getCurrentUser from "./lib/auth-user";
 
 export type FormState = {
@@ -40,75 +38,111 @@ export async function updateUserProfile(
   formData: FormData,
 ): Promise<FormState> {
   const session = await auth();
-  if (!session) return { message: "Não autorizado.", type: "error" };
 
-  const id = formData.get("id") as string;
-  const name = formData.get("name") as string;
-  const backgroundFile = formData.get("background") as File;
-  const imageFile = formData.get("image") as File;
-  const title = formData.get("title") as string;
-  const bio = formData.get("bio") as string;
-  const location = formData.get("location") as string;
-
-  if (session.user.id !== id)
-    return { message: "Não autorizado.", type: "error" };
-  if (name.length < 4) {
+  if (!session) {
     return {
-      message: "O nome deve conter no mínimo 4 Caracteres ",
-      type: "error",
-    };
-  } else if (bio.length <= 5) {
-    return {
-      message: "A bio deve conter no mínimo 5 Caracteres ",
-      type: "error",
-    };
-  } else if (location.length <= 4) {
-    return {
-      message: "A Localização deve conter no mínimo 4 Caracteres ",
+      message: "Não autorizado.",
       type: "error",
     };
   }
-  let backgroundUrl;
-  let imageUrl;
 
-  if (backgroundFile && backgroundFile.size != 0) {
-    const uploadDir = path.join(process.cwd(), "public", "uploads");
-    await fs.mkdir(uploadDir, { recursive: true });
-    const filePath = path.join(uploadDir, backgroundFile.name);
-    const arrayBuffer = await backgroundFile.arrayBuffer();
+  const dataForm = {
+    id: formData.get("id") as string,
+    name: formData.get("name") as string,
+    backgroundUrl: (formData.get("backgroundUrl") as string) || "",
+    imageUrl: (formData.get("imageUrl") as string) || "",
+    title: formData.get("title") as string,
+    bio: formData.get("bio") as string,
+    location: formData.get("location") as string,
+  };
 
-    await fs.writeFile(filePath, Buffer.from(arrayBuffer));
-    backgroundUrl = `/uploads/${backgroundFile.name}`;
+  if (session.user.id !== dataForm.id) {
+    return {
+      message: "Não autorizado.",
+      type: "error",
+    };
   }
 
-  if (imageFile && imageFile.size != 0) {
-    const uploadDir = path.join(process.cwd(), "public", "uploads");
-    await fs.mkdir(uploadDir, { recursive: true });
-    const filePath = path.join(uploadDir, imageFile.name);
-    const arrayBuffer = await imageFile.arrayBuffer();
+  if (dataForm.name.length < 4) {
+    return {
+      message: "O nome deve conter no mínimo 4 caracteres.",
+      type: "error",
+    };
+  }
 
-    await fs.writeFile(filePath, Buffer.from(arrayBuffer));
-    imageUrl = `/uploads/${imageFile.name}`;
+  if (dataForm.bio.length <= 5) {
+    return {
+      message: "A bio deve conter no mínimo 5 caracteres.",
+      type: "error",
+    };
+  }
+
+  if (dataForm.location.length <= 4) {
+    return {
+      message: "A localização deve conter no mínimo 4 caracteres.",
+      type: "error",
+    };
+  }
+
+  const original = await prisma.user.findUnique({
+    where: {
+      id: dataForm.id,
+    },
+  });
+
+  if (!original) {
+    return {
+      message: "Usuário não encontrado.",
+      type: "error",
+    };
+  }
+
+  const hasBackground = dataForm.backgroundUrl.length > 0;
+  const hasImage = dataForm.imageUrl.length > 0;
+
+  const hasChanges =
+    dataForm.name !== original.name ||
+    dataForm.title !== original.title ||
+    dataForm.bio !== original.bio ||
+    dataForm.location !== original.location ||
+    hasBackground ||
+    hasImage;
+
+  if (!hasChanges) {
+    return {
+      message: "Nenhuma alteração foi realizada.",
+      type: "error",
+    };
   }
 
   const dataToUpdate = {
-    ...(backgroundUrl && { background: backgroundUrl }),
-    ...(imageUrl && { image: imageUrl }),
-    name,
-    title,
-    bio,
-    location,
+    name: dataForm.name,
+    title: dataForm.title,
+    bio: dataForm.bio,
+    location: dataForm.location,
+
+    ...(hasBackground && {
+      background: dataForm.backgroundUrl,
+    }),
+
+    ...(hasImage && {
+      image: dataForm.imageUrl,
+    }),
   };
 
   await prisma.user.update({
-    where: { id },
+    where: {
+      id: dataForm.id,
+    },
     data: dataToUpdate,
   });
-
   revalidatePath("/");
-
-  return { message: "Perfil Atualizado com sucesso.", type: "success" };
+  return {
+    message: "Perfil atualizado com sucesso.",
+    type: "success",
+  };
 }
+
 export async function newPost(
   formState: FormState,
   formData: FormData,
@@ -119,7 +153,7 @@ export async function newPost(
   const userId = formData.get("id") as string;
   const visibleId = formData.get("visibleId") as string;
   const caption = formData.get("caption") as string;
-  const imageFile = formData.get("image") as File;
+  const imageUrl = formData.get("imageUrl") as string;
 
   if (session.user.id !== userId)
     return { message: "Não autorizado.", type: "error" };
@@ -129,17 +163,6 @@ export async function newPost(
       message: "Legenda deve conter no mínimo 5 caracteres.",
       type: "error",
     };
-  }
-
-  let imageUrl;
-  if (imageFile && imageFile.size != 0) {
-    const uploadDir = path.join(process.cwd(), "public", "uploads");
-    await fs.mkdir(uploadDir, { recursive: true });
-    const filePath = path.join(uploadDir, imageFile.name);
-    const arrayBuffer = await imageFile.arrayBuffer();
-
-    await fs.writeFile(filePath, Buffer.from(arrayBuffer));
-    imageUrl = `/uploads/${imageFile.name}`;
   }
 
   const newData = {
@@ -171,7 +194,9 @@ export async function getUserPosts(userId: string) {
     include: {
       user: true,
       likes: true,
-      comments: true,
+      comments: {
+        include: { user: true },
+      },
     },
     orderBy: {
       createdAt: "desc",
@@ -179,27 +204,27 @@ export async function getUserPosts(userId: string) {
   });
 }
 
-export async function deletePost(
-  formData: FormData,
-  userId: string,
-  postId: string,
-) {
+export async function deletePost(postId: string) {
   const logged = await getCurrentUser();
-
   if (logged === null) {
-    return { message: "Não autorizado!", type: "error" };
-  }
-  if (logged.id != userId) {
-    return { message: "Não autorizado!", type: "error" };
+    return null;
   }
 
   await prisma.post.delete({
     where: { id: postId },
   });
   revalidatePath("/");
-  return { message: "Post deletado com sucesso!", type: "success" };
 }
-
+export async function deleteComment(commentId: string) {
+  const logged = await getCurrentUser();
+  if (logged === null) {
+    return null;
+  }
+  await prisma.comment.delete({
+    where: { id: commentId },
+  });
+  revalidatePath("/");
+}
 export async function getAllPosts() {
   return await prisma.post.findMany({
     include: {
@@ -223,6 +248,7 @@ export async function likePost(postId: string): Promise<FormState> {
     throw new Error("Não autorizado!");
   }
   const loggedId = logged?.id;
+
   const trueLike = await prisma.like.findFirst({
     where: {
       postId,
@@ -251,7 +277,6 @@ export async function likePost(postId: string): Promise<FormState> {
   } else {
     return { message: "Você curtiu este post", type: "success" };
   }
-  
 }
 
 export async function addComment(postId: string, content: string) {

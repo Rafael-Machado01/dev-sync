@@ -16,7 +16,7 @@ export default function EditProfile({ user }: { user: User }) {
         onClick={handleClickEdit}
         className="mt-3.5 w-full text-sm rounded-lg border border-drac-purple bg-transparent text-drac-purple hover:bg-drac-darker hover:text-drac-cyan"
       >
-        [ EDITAR PERFIL ]
+        Editar Perfil
       </Button>
       <Modal isOpen={toggle} onClose={handleClickEdit} title="Edit Profile">
         <FormEditProfile user={user} />

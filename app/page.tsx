@@ -5,6 +5,7 @@ import Posts from "@/app/components/posts/Posts";
 import getCurrentUser from "./lib/auth-user";
 import NewPost from "./components/posts/NewPost";
 import { getAllPosts, getUserPosts } from "./actions";
+import CardStats from "./components/CardStats";
 
 export default async function Home() {
   const isAuth = await getCurrentUser();
@@ -23,7 +24,7 @@ export default async function Home() {
           <Posts userPosts={userPosts} posts={allPosts} isAuth={isAuth} />
         </main>
         <aside className={tailwindData.gridLayoutRightSide}>
-          <span>a</span>
+          <CardStats posts={allPosts} user={isAuth} />
         </aside>
       </div>
     </div>
