@@ -101,7 +101,7 @@ export default function FormEditProfile({ user }: { user: User }) {
               }}
             />
 
-            <span className="absolute inset-0 flex items-center justify-center gap-1.5 bg-black/40 text-sm text-white opacity-0 transition-opacity hover:opacity-100">
+            <span className="absolute inset-0 flex items-center justify-center gap-1.5 bg-black/40 text-sm text-white ">
               📷 Alterar capa
             </span>
           </label>
@@ -127,7 +127,7 @@ export default function FormEditProfile({ user }: { user: User }) {
                 className="h-14 w-14"
               />
 
-              <span className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40 text-xs text-white opacity-0 transition-opacity hover:opacity-100">
+              <span className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40 text-xs text-white">
                 📷
               </span>
             </label>
