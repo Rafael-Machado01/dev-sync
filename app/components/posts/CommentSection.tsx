@@ -29,6 +29,7 @@ export default function CommentSection({ posts, user }: CommentSectionProps) {
               <Avatar
                 src={comment.user.image || "/avatar.png"}
                 size={33}
+                className="w-[33] h-[33]"
                 alt={`Imagem de perfil de ${comment.user.name}`}
               />
               <span className="text-drac-fg font-bold text-xs">
