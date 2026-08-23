@@ -23,12 +23,15 @@ export default function CardStats({ posts, user }: CardStatsProps) {
       <p className="text-drac-pink mt-1">Posts : {posts.length}</p>
       <p className="text-drac-orange">Comentários: {totalComments}</p>
       <p className="text-drac-red">Likes: {totalLikes}</p>
+      <p className="text-drac-purple">
+        Tema: <span>Dracula</span>
+      </p>
       <p className="text-drac-cyan ">
         Status da Conta:
         {user ? (
           <span className="text-drac-green shadow-glow-green">Online</span>
         ) : (
-          <span className="text-drac-red shadow-glow-red">Offline</span>
+          <span className="text-drac-yellow shadow-glow-red">Offline</span>
         )}
       </p>
     </Card>

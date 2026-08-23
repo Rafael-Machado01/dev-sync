@@ -151,9 +151,13 @@ export async function newPost(
   if (!session) return { message: "Não autorizado.", type: "error" };
 
   const userId = formData.get("id") as string;
-  const visibleId = formData.get("visibleId") as string;
   const caption = formData.get("caption") as string;
   const imageUrl = formData.get("imageUrl") as string;
+
+  const randomHex = () => {
+    return crypto.randomUUID().replaceAll("-", "").slice(0, 6).toUpperCase();
+  };
+  const visibleId = randomHex();
 
   if (session.user.id !== userId)
     return { message: "Não autorizado.", type: "error" };
